@@ -4,4 +4,4 @@ TO COMPILE THE .cpp FILES:
 cpp$	g++ -o tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread tweet-generator.cpp
 
 
-THE FILES NEEDED AS A CONFIG FILES ARE IN THE DIRECTORY configs
+THE FILES NEEDED AS CONFIG FILES ARE IN THE DIRECTORY configs
