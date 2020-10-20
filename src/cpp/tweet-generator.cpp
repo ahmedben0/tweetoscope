@@ -61,6 +61,7 @@ int main(int argc, char* argv[]) {
 	  {"metadata.broker.list", params._kafka_brokers },
 	  {"log.connection.close", false }
 	};
+
 	cppkafka::MessageBuilder builder {params._kafka_topic};
 	cppkafka::Producer       producer(config);
 
