@@ -2,19 +2,16 @@ stages:
     - build
     - test
 
-.script: &build_script
-    build:
-        stage: build
-        script:
-            - echo "Building"
-            - echo "to be done"
-            - mkdir build
-            - touch build/b.txt
 
-.script: &build_script
-    test:
-        stage: test
-        script:
-            - echo "Testing"
-            - echo "to be done"
-            - cat build/b.txt
+build:
+    stage: build
+    script:
+        - echo "Building"
+        - echo "to be done"
+
+
+test:
+    stage: test
+    script:
+        - echo "Testing"
+        - echo "to be done"
