@@ -11,10 +11,10 @@ stages:
             - mkdir build
             - touch build/b.txt
 
-
-test:
-    stage: test
-    script:
-        - echo "Testing"
-        - echo "to be done"
-        - cat build/b.txt
+.script: &build_script
+    test:
+        stage: test
+        script:
+            - echo "Testing"
+            - echo "to be done"
+            - cat build/b.txt
