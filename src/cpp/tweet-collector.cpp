@@ -13,6 +13,13 @@
 #include <cppkafka/cppkafka.h>
 #include "tweet-collector.hpp"
 
+#include <sstream>
+#include <map>
+#include <vector>
+#include <tuple>
+
+#include "tweet-Processor.hpp"
+
 int main(int argc, char* argv[]) {
 
   if(argc != 2) {
@@ -47,6 +54,8 @@ int main(int argc, char* argv[]) {
   // Subscribe to the topic
   consumer.subscribe({params.topic.in});
 
+  // the class ProcessorsHandler takes care of the Processor bsed on the source
+  tweetoscope::ProcessorsHandler processors;
 
   while(true) {
     auto msg = consumer.poll();
@@ -56,7 +65,9 @@ int main(int argc, char* argv[]) {
        auto istr = std::istringstream(std::string(msg.get_payload()));
        istr >> twt;
 
-       // all the informatio is in the variable twt
+       // simple prints to show that the collector works 
+       /*
+       // all the information is in the variable twt
        // we can access easily to all the parts of the msg
        std::cout << "key : "       << key           << " - "
                  << "type : "      << twt.type      << " - "
@@ -66,8 +77,13 @@ int main(int argc, char* argv[]) {
                  << "source : "    << twt.source    << " - "
                  << "info : "      << twt.info
                  << std::endl;
+        */
+
+       // we use the maps to handle the processors
+       processors += {twt.source, twt.source, twt};
 
        consumer.commit(msg);
+
     }
 }
 

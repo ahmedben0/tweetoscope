@@ -23,11 +23,11 @@ namespace tweetoscope {
       struct Kafka {
 	std::string brokers;
       };
-      
+
       struct Topic {
 	std::string in, out_series, out_properties;
       };
-      
+
       struct Times {
 	std::vector<std::size_t> observation;
 	std::size_t              terminated;
@@ -37,8 +37,8 @@ namespace tweetoscope {
 	std::size_t min_cascade_size;
       };
     }
-    
-      
+
+
     struct collector {
     private:
       std::string current_section;
@@ -60,7 +60,7 @@ namespace tweetoscope {
 	std::getline(is, buf, '\n');
 	return {key, val};
       }
-      
+
     public:
 
       section::Kafka   kafka;
