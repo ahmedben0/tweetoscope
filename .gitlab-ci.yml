@@ -1,0 +1,17 @@
+stages:
+    - build
+    - test
+
+
+build:
+    stage: build
+    script:
+        - echo "Building"
+        - echo "to be done"
+
+
+test:
+    stage: test
+    script:
+        - echo "Testing"
+        - echo "to be done"
