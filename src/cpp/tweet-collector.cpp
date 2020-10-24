@@ -39,10 +39,10 @@ int main(int argc, char* argv[]) {
 	  {"metadata.broker.list", params.kafka.brokers},
     { "auto.offset.reset", "earliest" },
 	  {"log.connection.close", false },
-    {"group.id","mygroup"}     // a groud id is mandatory to avoid errors ralated to the subscription to the topic
+    {"group.id","mygroup"}     // a groud id is mandatory to avoid errors related to the subscription to the topic
 	};
 
-	cppkafka::Consumer       consumer(config);
+	cppkafka::Consumer consumer(config);
 
   // Subscribe to the topic
   consumer.subscribe({params.topic.in});
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
        istr >> twt;
 
        // all the informatio is in the variable twt
-       // we cam access easily to all the parts of the msg
+       // we can access easily to all the parts of the msg
        std::cout << "key : "       << key           << " - "
                  << "type : "      << twt.type      << " - "
                  << "msg : "       << twt.msg       << " - "

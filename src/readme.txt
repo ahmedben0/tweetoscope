@@ -5,3 +5,6 @@ cpp$	g++ -o tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gam
 
 
 THE FILES NEEDED AS CONFIG FILES FOR THE EXECUTABLES ARE IN THE DIRECTORY : configs
+
+TO RUN THE EXECUTABLES :
+src$    ./cpp/tweet-generator ./configs/params.config
