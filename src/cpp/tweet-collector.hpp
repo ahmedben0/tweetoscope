@@ -16,6 +16,9 @@
 
 namespace tweetoscope {
 
+  // save the parameters in a global structure
+
+
   using timestamp = std::size_t;
   namespace source {
     using idf = std::size_t;

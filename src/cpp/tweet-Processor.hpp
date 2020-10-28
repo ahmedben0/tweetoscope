@@ -24,16 +24,18 @@ namespace tweetoscope {
 
     virtual ~Processor() {};
 
-    // add functions to handle a given tweet
   };
 
 
-
-
   struct ProcessorsHandler {
+    // a map containing all the processors (every processor is associated with a source)
     std::map<source::idf, Processor> processors;
+    // we add the terminated time in the attributes of the ProcessorsHandler
+    // in order to use it in checking if we should send the kafka message !
+    std::size_t terminated_cascade;
 
     ProcessorsHandler() = default;
+    ProcessorsHandler(std::size_t t_c) : terminated_cascade(t_c) {};
     //ProcessorsHandler(const Processor& pr) = default;
     virtual ~ProcessorsHandler() {};
 
@@ -65,8 +67,11 @@ namespace tweetoscope {
             if (c->key == std::get<1>(processor)) {
               cascade_exists = true;
               // params.topic.terminated=1800
-              if (std::get<2>(processor).time - c->latest_time > 1800) {
-                std::cout << "cascade terminated - send kafka msg !  - TO BE REMOVED" << std::endl;
+              if (std::get<2>(processor).time - c->latest_time > terminated_cascade) {
+                std::cout << "cascade terminated - send kafka msg !  - TO BE REMOVED " << terminated_cascade << std::endl;
+                // cascade to be sent in a kafka message
+                // remove the cascade from the processor
+                // check if the the processor is eampty or not
               } else {
                 c->latest_time = std::get<2>(processor).time;
                 c->twts.push_back(std::get<2>(processor));

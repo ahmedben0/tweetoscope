@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
   consumer.subscribe({params.topic.in});
 
   // the class ProcessorsHandler takes care of the Processor bsed on the source
-  tweetoscope::ProcessorsHandler processors;
+  tweetoscope::ProcessorsHandler processors(params.times.terminated);
 
 
   while(true) {
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
        */
 
        // we use the maps to handle the processors
-       processors += {twt.source, key, twt}; ///.source, twt};
+       processors += {twt.source, key, twt};
 
        consumer.commit(msg);
 

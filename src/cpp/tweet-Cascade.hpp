@@ -58,6 +58,8 @@ namespace tweetoscope {
 
     virtual ~Cascade() {};
 
+    // define fucntion to send kafka messsage : message = Cascade !
+
   };
 
 
