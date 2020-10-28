@@ -22,6 +22,11 @@ namespace tweetoscope {
       r->location = queue.push(r);
     };
 
+    // remove a cascade from a the queue
+    // and then send a kafka message
+    /// the function to send a kafka message should be added in the class Cascade!
+    void remove_cascade(ref cascade_ptr);
+
     virtual ~Processor() {};
 
   };
@@ -46,7 +51,9 @@ namespace tweetoscope {
       bool cascade_exists = false;
         // If the module does not exist yet, we create it.
         // The arguments following the key of try_emplace fit the ones of a Module constructor.
-      auto [it, is_newly_created] = processors.try_emplace(std::get<0>(processor), std::get<1>(processor), std::get<2>(processor));
+      auto [it, is_newly_created] = processors.try_emplace(std::get<0>(processor),
+                                                           std::get<1>(processor),
+                                                           std::get<2>(processor));
 
       if(is_newly_created) {
         // tweet and retweets are from the same source.
@@ -68,7 +75,8 @@ namespace tweetoscope {
               cascade_exists = true;
               // params.topic.terminated=1800
               if (std::get<2>(processor).time - c->latest_time > terminated_cascade) {
-                std::cout << "cascade terminated - send kafka msg !  - TO BE REMOVED " << terminated_cascade << std::endl;
+                std::cout << "cascade terminated - send kafka msg !  - TO BE REMOVED "
+                          << terminated_cascade << std::endl;
                 // cascade to be sent in a kafka message
                 // remove the cascade from the processor
                 // check if the the processor is eampty or not
@@ -94,7 +102,8 @@ namespace tweetoscope {
       }
 
       // prints to check for a given source the effect of the creation of cascade on the processor
-      ///if (std::get<0>(processor) == 1) std::cout << "source: " << std::get<0>(processor) << " - size:"  << it->second.queue.size() << std::endl;
+      ///if (std::get<0>(processor) == 1) std::cout << "source: " << std::get<0>(processor)
+      ///                                 << " - size:"  << it->second.queue.size() << std::endl;
 
     }
 
