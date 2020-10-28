@@ -58,9 +58,42 @@ namespace tweetoscope {
 
     virtual ~Cascade() {};
 
-    // define fucntion to send kafka messsage : message = Cascade !
+    // define function to send kafka messsage : message = Cascade !
+    friend std::ostream& operator<<(std::ostream& os, const Cascade& c);
 
   };
+
+/*
+  std::cout << "{\"time\": "     << twt.time      << " , "
+            << "\"magnitude\": " << twt.magnitude << " , "
+            << "\"info\": \""    << twt.info      << "\"}"
+            << std::endl;
+*/
+
+  std::ostream& operator<<(std::ostream& os, const Cascade& c) {
+      os << "{\"key\" : "        << c.key         << " , "
+         << "\"source_id\" : "   << c.source_id   << " , "
+         << "\"msg\" : "         << c.msg         << " , "
+         << "\"latest_time\" : " << c.latest_time << " , "
+         << "\"list_retweets\" : [";
+/*
+      for (auto& t : c.twts) {
+        os << "{\"time\": "     << t.time      << " , "
+           << "\"magnitude\": " << t.magnitude << " , "
+           << "\"info\": "      << t.info      << "\"},";
+      }
+*/
+      for(auto ptr_t = c.twts.begin(); ptr_t != c.twts.end(); ++ptr_t){
+        os << "{\"time\": "     << ptr_t->time      << " , "
+           << "\"magnitude\": " << ptr_t->magnitude << " , "
+           << "\"info\": \""      << ptr_t->info      << "\"}";
+        if (ptr_t != c.twts.end()-1) os << ",";
+      }
+      //os >> os;
+      os << "]}";
+
+      return os;
+  }
 
 
   bool element_ref_comparator::operator()(ref op1, ref op2) const {

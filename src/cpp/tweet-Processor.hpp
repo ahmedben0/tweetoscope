@@ -75,8 +75,16 @@ namespace tweetoscope {
               cascade_exists = true;
               // params.topic.terminated=1800
               if (std::get<2>(processor).time - c->latest_time > terminated_cascade) {
-                std::cout << "cascade terminated - send kafka msg !  - TO BE REMOVED "
+                std::cout << "   cascade terminated - send kafka msg !  - TO BE REMOVED "
                           << terminated_cascade << std::endl;
+                /// we can print the content of the cascade using the operator <<
+                /// note that we should put *c and not just c.
+                /// cout :
+                //std::cout << *c << std::endl;
+
+                // to be added : a producer to a topic (let's call it "cascade")
+                // and send the messages
+
                 // cascade to be sent in a kafka message
                 // remove the cascade from the processor
                 // check if the the processor is eampty or not

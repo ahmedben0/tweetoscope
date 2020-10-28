@@ -74,6 +74,7 @@ int main(int argc, char* argv[]) {
        // all the information is in the variable twt
        // we can access easily to all the parts of the msg
 
+
        /*
        std::cout << "key: "       << key           << " - "
                  << "type: "      << twt.type      << " - "
@@ -84,6 +85,7 @@ int main(int argc, char* argv[]) {
                  << "info: "      << twt.info
                  << std::endl;
        */
+
 
        // we use the maps to handle the processors
        processors += {twt.source, key, twt};
