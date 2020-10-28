@@ -19,8 +19,10 @@
 #include <tuple>
 
 #include "tweet-Processor.hpp"
+#include "tweet-Cascade.hpp"
 
 int main(int argc, char* argv[]) {
+
 
   if(argc != 2) {
     std::cout << "Usage : " << argv[0] << " <config-filename>" << std::endl;
@@ -46,7 +48,8 @@ int main(int argc, char* argv[]) {
 	  {"metadata.broker.list", params.kafka.brokers},
     { "auto.offset.reset", "earliest" },
 	  {"log.connection.close", false },
-    {"group.id","mygroup"}     // a groud id is mandatory to avoid errors related to the subscription to the topic
+    // a groud id is mandatory to avoid errors related to the subscription to the topic
+    {"group.id","mygroup"}
 	};
 
 	cppkafka::Consumer consumer(config);
@@ -57,6 +60,7 @@ int main(int argc, char* argv[]) {
   // the class ProcessorsHandler takes care of the Processor bsed on the source
   tweetoscope::ProcessorsHandler processors;
 
+
   while(true) {
     auto msg = consumer.poll();
     if( msg && ! msg.get_error() ) {
@@ -65,22 +69,24 @@ int main(int argc, char* argv[]) {
        auto istr = std::istringstream(std::string(msg.get_payload()));
        istr >> twt;
 
-       // simple prints to show that the collector works 
-       /*
+       // simple prints to show that the collector works
+
        // all the information is in the variable twt
        // we can access easily to all the parts of the msg
-       std::cout << "key : "       << key           << " - "
-                 << "type : "      << twt.type      << " - "
-                 << "msg : "       << twt.msg       << " - "
-                 << "time : "      << twt.time      << " - "
-                 << "magnitude : " << twt.magnitude << " - "
-                 << "source : "    << twt.source    << " - "
-                 << "info : "      << twt.info
+
+       /*
+       std::cout << "key: "       << key           << " - "
+                 << "type: "      << twt.type      << " - "
+                 << "msg: "       << twt.msg       << " - "
+                 << "time: "      << twt.time      << " - "
+                 << "magnitude: " << twt.magnitude << " - "
+                 << "source: "    << twt.source    << " - "
+                 << "info: "      << twt.info
                  << std::endl;
-        */
+       */
 
        // we use the maps to handle the processors
-       processors += {twt.source, twt.source, twt};
+       processors += {twt.source, key, twt}; ///.source, twt};
 
        consumer.commit(msg);
 

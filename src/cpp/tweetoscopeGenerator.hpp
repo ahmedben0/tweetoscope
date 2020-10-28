@@ -269,8 +269,8 @@ namespace tweetoscope {
      */
     void update_from_offsets() {
       if(base != DataIt()) {
-	begin = base + offset_begin;
-	end   = base + offset_end;
+      	begin = base + offset_begin;
+      	end   = base + offset_end;
       }
     }
 
