@@ -64,8 +64,13 @@ namespace tweetoscope {
             // 2 cascades are equals if they have the same key
             if (c->key == std::get<1>(processor)) {
               cascade_exists = true;
-              c->latest_time = std::get<2>(processor).time;
-              c->twts.push_back(std::get<2>(processor));
+              // params.topic.terminated=1800
+              if (std::get<2>(processor).time - c->latest_time > 1800) {
+                std::cout << "cascade terminated - send kafka msg !  - TO BE REMOVED" << std::endl;
+              } else {
+                c->latest_time = std::get<2>(processor).time;
+                c->twts.push_back(std::get<2>(processor));
+              }
 
             }
           }
@@ -76,7 +81,7 @@ namespace tweetoscope {
             // using this print, we can see that when a new cascade is
             // created, the size of the queue increases by one
             // see the condition followed by the print at the end of this function
-            if (std::get<0>(processor) == 1) std::cout << "cascade created !" << std::endl;
+            ///if (std::get<0>(processor) == 1) std::cout << "cascade created !" << std::endl;
           }
           // set the boolean value to false
           cascade_exists = false;
@@ -84,7 +89,7 @@ namespace tweetoscope {
       }
 
       // prints to check for a given source the effect of the creation of cascade on the processor
-      if (std::get<0>(processor) == 1) std::cout << "source: " << std::get<0>(processor) << " - size:"  << it->second.queue.size() << std::endl;
+      ///if (std::get<0>(processor) == 1) std::cout << "source: " << std::get<0>(processor) << " - size:"  << it->second.queue.size() << std::endl;
 
     }
 
