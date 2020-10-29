@@ -56,6 +56,7 @@ namespace tweetoscope {
       twts.push_back(t);
     };
 
+
     virtual ~Cascade() {};
 
     // define function to send kafka messsage : message = Cascade !
@@ -63,12 +64,6 @@ namespace tweetoscope {
 
   };
 
-/*
-  std::cout << "{\"time\": "     << twt.time      << " , "
-            << "\"magnitude\": " << twt.magnitude << " , "
-            << "\"info\": \""    << twt.info      << "\"}"
-            << std::endl;
-*/
 
   std::ostream& operator<<(std::ostream& os, const Cascade& c) {
       os << "{\"key\" : "        << c.key         << " , "
@@ -76,22 +71,19 @@ namespace tweetoscope {
          << "\"msg\" : "         << c.msg         << " , "
          << "\"latest_time\" : " << c.latest_time << " , "
          << "\"list_retweets\" : [";
-/*
-      for (auto& t : c.twts) {
-        os << "{\"time\": "     << t.time      << " , "
-           << "\"magnitude\": " << t.magnitude << " , "
-           << "\"info\": "      << t.info      << "\"},";
-      }
-*/
+      // the information related to the retweets are stored
+      // in a list of dictionnary
       for(auto ptr_t = c.twts.begin(); ptr_t != c.twts.end(); ++ptr_t){
+        // the information to keep from a retweet are :
+        // the time, the magnitude and the info
         os << "{\"time\": "     << ptr_t->time      << " , "
            << "\"magnitude\": " << ptr_t->magnitude << " , "
-           << "\"info\": \""      << ptr_t->info      << "\"}";
+           << "\"info\": \""    << ptr_t->info      << "\"}";
+        // we add a comma at the end of every retweet but the last one
         if (ptr_t != c.twts.end()-1) os << ",";
       }
-      //os >> os;
-      os << "]}";
 
+      os << "]}";
       return os;
   }
 

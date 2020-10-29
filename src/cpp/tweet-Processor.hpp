@@ -3,14 +3,23 @@
 // add queue to the Processor
 #pragma once
 
+#include <cppkafka/cppkafka.h>
 #include "tweet-Cascade.hpp"
 
 namespace tweetoscope {
 
-  struct Processor {
+  cppkafka::Configuration config_c {
+    // we should modify the config file !
+	  {"metadata.broker.list", "localhost:9092" },
+	  {"log.connection.close", false }
+	};
 
-    // A first attribute of your processor will
-    // be a queue that stores the cascade you handle.
+  // same here : name of the topic should be in config file as well
+  cppkafka::MessageBuilder builder_c {"cascades"};
+	cppkafka::Producer       producer_c(config_c);
+
+
+  struct Processor {
 
     // queue
     priority_queue queue;
@@ -21,11 +30,6 @@ namespace tweetoscope {
       auto r = cascade_ptr(key, t);
       r->location = queue.push(r);
     };
-
-    // remove a cascade from a the queue
-    // and then send a kafka message
-    /// the function to send a kafka message should be added in the class Cascade!
-    void remove_cascade(ref cascade_ptr);
 
     virtual ~Processor() {};
 
@@ -75,12 +79,13 @@ namespace tweetoscope {
               cascade_exists = true;
               // params.topic.terminated=1800
               if (std::get<2>(processor).time - c->latest_time > terminated_cascade) {
-                std::cout << "   cascade terminated - send kafka msg !  - TO BE REMOVED "
-                          << terminated_cascade << std::endl;
+                //std::cout << "   cascade terminated - send kafka msg !  - TO BE REMOVED " << terminated_cascade << std::endl;
                 /// we can print the content of the cascade using the operator <<
                 /// note that we should put *c and not just c.
                 /// cout :
                 //std::cout << *c << std::endl;
+
+                this->update_processor(c);
 
                 // to be added : a producer to a topic (let's call it "cascade")
                 // and send the messages
@@ -112,7 +117,6 @@ namespace tweetoscope {
       // prints to check for a given source the effect of the creation of cascade on the processor
       ///if (std::get<0>(processor) == 1) std::cout << "source: " << std::get<0>(processor)
       ///                                 << " - size:"  << it->second.queue.size() << std::endl;
-
     }
 
     // This removes a processor
@@ -121,6 +125,54 @@ namespace tweetoscope {
         processors.erase(it);
     }
 
+    // remove a cascade from a the queue
+    // and then send a kafka message
+    /// the function to send a kafka message should be added in the class Cascade!
+    void update_processor(ref cascade_ptr) {
+      /// since the cascade has an attribute for the source,
+      /// we don't need to add the processor as an input
+      /// to the function since we can refer to it from the map
+      // steps :
+      // 1. send the cascade in a kafka message
+      // 2. remove the cascade from the queue
+      // 3. remove the processor if the queue is empty
+
+      // step 1
+      auto key = std::to_string(cascade_ptr->key);
+      builder_c.key(key);
+      std::ostringstream ostr;
+      ostr << *cascade_ptr;
+      auto msg = ostr.str();
+      builder_c.payload(msg);
+      producer_c.produce(builder_c);
+
+      // step 2
+      auto& ptr_p = this->processors[cascade_ptr->source_id];
+
+      for (auto& q : ptr_p.queue) {
+        if (q->key == cascade_ptr->key) {
+          if (! ptr_p.queue.empty()) {
+            //ptr_p.queue.erase(q->location);
+            std::cout <<  " -- we should erase the cascade from the processor!  -- " << std::endl;
+
+            // step 3
+          } else {
+
+            auto it = this->processors.find(cascade_ptr->source_id);
+            ///this->processors.erase(cascade_ptr->source_id);
+
+            std::cout <<  " -- we should erase the processor -- " << std::endl;
+              //break;
+          }
+        }
+      }
+
+    }
+
+
   };
+
+
+
 
 }
