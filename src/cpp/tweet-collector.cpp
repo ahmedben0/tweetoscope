@@ -18,8 +18,10 @@
 #include <vector>
 #include <tuple>
 
-#include "tweet-Processor.hpp"
-#include "tweet-Cascade.hpp"
+//#include "tweet-Processor.hpp"
+#include "tweet-Processor.cpp"
+//#include "tweet-Cascade.hpp"
+#include "tweet-Cascade.cpp"
 
 int main(int argc, char* argv[]) {
 
@@ -70,11 +72,8 @@ int main(int argc, char* argv[]) {
        istr >> twt;
 
        // simple prints to show that the collector works
-
        // all the information is in the variable twt
        // we can access easily to all the parts of the msg
-
-
        /*
        std::cout << "key: "       << key           << " - "
                  << "type: "      << twt.type      << " - "
@@ -85,7 +84,6 @@ int main(int argc, char* argv[]) {
                  << "info: "      << twt.info
                  << std::endl;
        */
-
 
        // we use the maps to handle the processors
        processors += {twt.source, key, twt};
