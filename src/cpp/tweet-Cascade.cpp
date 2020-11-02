@@ -62,6 +62,8 @@ namespace tweetoscope {
     auto msg = ostr.str();
     builder_c.payload(msg);
     producer_c.produce(builder_c);
+
+    std::cout << *c_ptr << std::endl;
   }
 
 

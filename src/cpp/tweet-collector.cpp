@@ -31,9 +31,6 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  // random seed initialization
-  //std::random_device rd;
-  //std::mt19937 gen(rd());
 
   tweetoscope::params::collector params(argv[1]);
   std::cout << std::endl
