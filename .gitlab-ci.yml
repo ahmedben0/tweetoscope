@@ -2,14 +2,11 @@ stages:
     - build
     - test
 
-image:
-    stage: build
-    script:
-        - docker build -f Dockerfile.cppfile -t cpp-docker-image .
 
 build:
     stage: build
     script:
+        - docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
         - echo "Building"
         - echo "to be done"
 
@@ -17,5 +14,6 @@ build:
 test:
     stage: test
     script:
+        - docker run cpp-docker-image
         - echo "Testing"
         - echo "to be done"
