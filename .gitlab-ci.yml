@@ -1,9 +1,9 @@
 image: fellajimed/cpp-docker-image:latest
 
 before_script:
-  #- export PATH=$PATH:/usr/local/bin
-  # export PATH=$PATH:/usr/include/:$PATH
-  #- export PATH=$PATH:/usr/bin/:$PATH
+  - export PATH=$PATH:/usr/local/bin
+  - export PATH=$PATH:/usr/include/:$PATH
+  - export PATH=$PATH:/usr/bin/:$PATH
   - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/share/pkgconfig
   - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
   - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/include
@@ -13,10 +13,12 @@ stages:
     - build
     - test
 
+## add a step to check that the docker file is running smoothly
+
 build:
     stage: build
     script:
-        #- docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
+        - docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
         - echo "Building"
         - echo "to be done"
 
