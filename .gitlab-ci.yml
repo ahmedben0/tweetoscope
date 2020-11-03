@@ -16,6 +16,8 @@ test:
     #stage: test
     image: fellajimed/cpp-docker-image:latest
     script:
+        - export PATH=$HOME/./usr/include/:$PATH
+        - export PATH=$HOME/./usr/bin/:$PATH
         - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
         - g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
         - echo "Testing"
