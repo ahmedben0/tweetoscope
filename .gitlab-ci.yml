@@ -1,15 +1,3 @@
-stages:
-    - build
-    - test
-
-
-build:
-    stage: build
-    script:
-        - docker build -f docker/Dockerfile.cppfile .
-        - echo "Building"
-
-
 image: fellajimed/cpp-docker-image:latest
 
 before_script:
@@ -21,6 +9,17 @@ before_script:
     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/include
     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib
 
+
+stages:
+    - build
+    - test
+
+
+build:
+    stage: build
+    script:
+        #- docker build -f docker/Dockerfile.cppfile .
+        - echo "Building"
 
 test:
     stage: test
