@@ -1,5 +1,3 @@
-image: fellajimed/cpp-docker-image:latest
-
 before_script:
   - export PATH=$PATH:/usr/local/bin
   - export PATH=$PATH:/usr/include/:$PATH
@@ -18,7 +16,7 @@ stages:
 build:
     stage: build
     script:
-        #- docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
+        - docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
         - echo "Building"
 
 
