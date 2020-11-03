@@ -1,11 +1,8 @@
+image: fellajimed/cpp-docker-image:latest
+
 stages:
     - build
     - test
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 136bcad32c545b8e69357fe204a83b788be45e4e
 
 build:
     stage: build
@@ -18,6 +15,7 @@ build:
 test:
     stage: test
     script:
-        - docker run cpp-docker-image
+        - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
+        - g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
         - echo "Testing"
         - echo "to be done"
