@@ -3,6 +3,11 @@ image: fellajimed/cpp-docker-image:latest
 stages:
     - build
     - test
+    - echo $HOME
+
+before_script:
+  - export PATH=$PATH:/usr/local/bin
+
 
 build:
     stage: build
