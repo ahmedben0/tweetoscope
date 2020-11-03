@@ -14,5 +14,6 @@ build:
 test:
     stage: test
     script:
+        - docker run cpp-docker-image
         - echo "Testing"
         - echo "to be done"
