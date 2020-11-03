@@ -10,7 +10,7 @@ stages:
 build:
     stage: build
     script:
-        - docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
+        - docker build -f docker/Dockerfile.cppfile -t .
         - echo "Building"
 
 
