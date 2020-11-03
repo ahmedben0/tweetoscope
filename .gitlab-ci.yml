@@ -1,7 +1,11 @@
 stages:
     - build
     - test
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 136bcad32c545b8e69357fe204a83b788be45e4e
 
 build:
     stage: build

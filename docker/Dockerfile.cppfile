@@ -28,5 +28,12 @@ RUN git clone https://github.com/HerveFrezza-Buet/gaml gaml \
 && make \
 && make install
 
+<<<<<<< HEAD
 CMD g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
 CMD g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
+=======
+## test compilation cpp files 
+CMD g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
+CMD g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
+
+>>>>>>> 136bcad32c545b8e69357fe204a83b788be45e4e
