@@ -5,6 +5,7 @@ stages:
 
 build:
     stage: build
+    image: fellajimed/wikipedia-docker-agg:latest
     script:
         - echo "Building"
         - echo "to be done"
