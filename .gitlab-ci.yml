@@ -18,17 +18,13 @@ stages:
 build:
     stage: build
     script:
-        - docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
+        #- docker build -f docker/Dockerfile.cppfile -t cpp-docker-image .
         - echo "Building"
-        - echo "to be done"
 
 
 test:
     stage: test
     image: fellajimed/cpp-docker-image:latest
     script:
-
         - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
         - g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
-        - echo "Testing"
-        - echo "to be done"
