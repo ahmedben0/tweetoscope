@@ -2,6 +2,10 @@ stages:
     - build
     - test
 
+image:
+    stage: build
+    script:
+        - docker build -f Dockerfile.cppfile -t cpp-docker-image .
 
 build:
     stage: build
