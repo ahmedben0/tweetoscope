@@ -1,5 +1,3 @@
-image: fellajimed/cpp-docker-image:latest
-
 before_script:
     - export PATH=$PATH:/usr/local/bin
     - export PATH=$PATH:/usr/include/:$PATH
@@ -21,10 +19,10 @@ build:
         - docker build -f docker/Dockerfile.cppfile .
         - echo "Building"
 
+image: fellajimed/cpp-docker-image:latest
 
 test:
     stage: test
-    image: fellajimed/cpp-docker-image:latest
     script:
         - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
         - g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
