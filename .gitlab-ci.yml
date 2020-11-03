@@ -13,7 +13,7 @@ build:
 
 
 test:
-    #stage: test
+    stage: test
     image: fellajimed/cpp-docker-image:latest
     script:
         - export PATH=$HOME/./usr/include/:$PATH
