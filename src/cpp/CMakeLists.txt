@@ -1,6 +1,4 @@
-file(GLOB 
-  lib_sources
-  tweet-col*.cpp)
 
 
-add_executable(tweet ${lib_sources} ${CMAKE_BINARY_DIR})
+add_executable(tweet-collector tweet-collector.cpp ${CMAKE_BINARY_DIR})
+add_executable(tweet-generator tweet-generator.cpp ${CMAKE_BINARY_DIR})

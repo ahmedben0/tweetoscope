@@ -15,7 +15,10 @@ build:
     stage: build
     script:
         #- docker build -f docker/Dockerfile.cppfile .
-        - echo "Building"
+        - cd build
+        - cmake ..
+        - make 
+        - echo ""
 
 test:
     stage: test
