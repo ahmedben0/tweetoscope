@@ -15,6 +15,7 @@ build:
     stage: build
     script:
         #- docker build -f docker/Dockerfile.cppfile .
+        - mkdir build
         - cd build
         - cmake ..
         - make 
