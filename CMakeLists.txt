@@ -24,10 +24,3 @@ include_directories(${CPPKAFKA_INCLUDE_DIRS} ${GAML_INCLUDE_DIRS} ${RDKAFKA_STAT
 add_compile_options(-O3 -Wall)
 
 add_subdirectory(src/cpp)
- 
-
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()

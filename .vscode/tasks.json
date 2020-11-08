@@ -8,10 +8,15 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "O3",
+                "-Wall",
+                "-std=c++17",
+                "`pkg-config --libs --cflags gaml cppkafka rdkafka`",
+                "-lpthread"
             ],
             "options": {
-                "cwd": "/usr/bin"
+                "cwd": "${workspacefolder}"
             },
             "problemMatcher": [
                 "$gcc"

@@ -4,16 +4,14 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/retina/Documents/3_année/cours/tweetoscope/src/cpp/tweet-collector.cpp" "/Users/retina/Documents/3_année/cours/tweetoscope/build/src/cpp/CMakeFiles/tweet.dir/tweet-collector.cpp.o"
+  "/media/nashimo/FELLAJI/tweetoscope/src/cpp/tweet-collector.cpp" "/media/nashimo/FELLAJI/tweetoscope/build/src/cpp/CMakeFiles/tweet.dir/tweet-collector.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/usr/local/include"
-  "/usr/local/include/cppkafka"
-  "/usr/local/Cellar/librdkafka/1.5.0/include"
-  "/usr/local/include/gaml"
+  "/usr/include/cppkafka"
+  "/usr/include/gaml"
   )
 
 # Targets to which this target links.

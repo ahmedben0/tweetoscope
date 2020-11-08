@@ -1,4 +1,4 @@
-# Install script for directory: /Users/retina/Documents/3_année/cours/tweetoscope
+# Install script for directory: /media/nashimo/FELLAJI/tweetoscope
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,6 +27,11 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
+# Install shared libraries without execute permission?
+if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
+  set(CMAKE_INSTALL_SO_NO_EXE "1")
+endif()
+
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
@@ -39,7 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/retina/Documents/3_année/cours/tweetoscope/build/src/cpp/cmake_install.cmake")
+  include("/media/nashimo/FELLAJI/tweetoscope/build/src/cpp/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +56,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/retina/Documents/3_année/cours/tweetoscope/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/media/nashimo/FELLAJI/tweetoscope/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
