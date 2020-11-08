@@ -1,13 +1,9 @@
 image: fellajimed/cpp-docker-image:latest
 
 before_script:
-    - export PATH=$PATH:/usr/local/bin
-    - export PATH=$PATH:/usr/include/:$PATH
-    - export PATH=$PATH:/usr/bin/:$PATH
+    - export PATH=$PATH:/usr/local/bin:/usr/include/:/usr/bin/
     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/share/pkgconfig
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/include
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib
+    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig:/usr/local/lib:/usr/local/include
 
 
 stages:

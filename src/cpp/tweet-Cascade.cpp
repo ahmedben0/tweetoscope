@@ -36,35 +36,81 @@ namespace tweetoscope {
     return os;
   }
 
+  std::string msg_cascade_series(const Cascade& c) {
+    // Key = None Value = { 'type' : 'serie', 'cid': 'tw23981', 'msg' : 'blah blah', 'T_obs': 600, 'tweets': [ (t1, mag1), (t2,mag2), ... ] }
+    std::ostringstream os;
+
+    os << "{\'type\' : "  << "\'serie\'"   << " , "
+       << "\'cid\' : "    << c.key         << " , "
+       << "\'msg\' : "    << c.msg         << " , "
+       << "\'T_obs\' : "  << c.latest_time << " , "
+       << "\'tweets\' : [";
+    // the information related to the retweets are stored
+    // in a list of dictionnary
+    for(auto ptr_t = c.twts.begin(); ptr_t != c.twts.end(); ++ptr_t){
+      // the information to keep from a retweet are :
+      // the time, the magnitude and the info
+      os << "(" << ptr_t->time << ", " << ptr_t->magnitude << ")";
+      // we add a comma at the end of every retweet but the last one
+      if (ptr_t != c.twts.end()-1) os << ",";
+    }
+
+    os << "]}";
+    return os.str();
+  }
+
+
+  std::string msg_cascade_properties(const Cascade& c) {
+    // Key = 300  Value = { 'type' : 'size', 'cid': 'tw23981', 'n_tot': 127, 't_end': 4329 }
+    std::ostringstream os;
+
+    os << "{\'type\' : "  << "\'size\'"    << " , "
+       << "\'cid\' : "    << c.key         << " , "
+       << "\'n_tot\' : "  << c.twts.size() << " , "
+       << "\'t_end\' : "  << c.latest_time << "}";
+
+    return os.str();
+  }
 
   bool element_ref_comparator::operator()(ref op1, ref op2) const {
     return *op1 < *op2;
   }
 
-  // kafka producer !
-  cppkafka::Configuration config_c {
-    // we should modify the config file !
-	  {"metadata.broker.list", "localhost:9092" },
-	  {"log.connection.close", false }
-	};
 
-  // same here : name of the topic should be in config file as well
-  cppkafka::MessageBuilder builder_c {"cascades"};
-	cppkafka::Producer       producer_c(config_c);
-
-  void send_kafka_msg(ref c_ptr) {
+  void send_kafka_msg(ref c_ptr, const ProcessorsHandler& pr, cascade::idf k) {
     // send the cascade in a kafka message
+    // if k == c_ptr->key => out out_series
+    // else : out_properties
 
-    auto key = std::to_string(c_ptr->key);
-    builder_c.key(key);
-    std::ostringstream ostr;
-    ostr << *c_ptr;
-    auto msg = ostr.str();
-    builder_c.payload(msg);
-    producer_c.produce(builder_c);
+    // kafka producer !
+    cppkafka::Configuration config_c {
+      {"metadata.broker.list", pr.params_.kafka.brokers},
+      {"log.connection.close", false }
+    };
+    cppkafka::Producer  producer_c(config_c);
 
-    std::cout << *c_ptr << std::endl;
+    auto key = std::to_string(k);
+
+    if (k == c_ptr->key) {
+      cppkafka::MessageBuilder builder_c {pr.params_.topic.out_series};
+
+      builder_c.key(key);
+      std::ostringstream ostr;
+      ostr.str(msg_cascade_series(*c_ptr));
+      auto msg = ostr.str();
+      builder_c.payload(msg);
+      producer_c.produce(builder_c);
+
+    } else {
+      cppkafka::MessageBuilder builder_c {pr.params_.topic.out_properties};
+
+      builder_c.key(key);
+      std::ostringstream ostr;
+      ostr.str(msg_cascade_properties(*c_ptr));
+      auto msg = ostr.str();
+      builder_c.payload(msg);
+      producer_c.produce(builder_c);
+    }
   }
-
 
 }
