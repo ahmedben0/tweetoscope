@@ -43,6 +43,23 @@ namespace tweetoscope {
       auto c_ptr = cascade_ptr(std::get<1>(processor), std::get<2>(processor));
       auto [it_s, is_symbol_created] = ptr_p->second.symbol_table.insert(std::make_pair(std::get<1>(processor), c_ptr));
 
+      ////////////////////
+      /// partial cascades
+      ////////////////////
+      for(auto& [obs, cascades]: ptr_p->second.partial_cascade){
+        while(!cascades.empty()) {
+          if (auto sp_r = cascades.front().lock()) {
+            if (std::get<2>(processor).time - sp_r->first_time > obs) {
+              // send the kafka : topic = cascade_properties
+              std::cout << "[cascade_properties] Key = " << obs  << "  Values = " <<  msg_cascade_properties(*sp_r) << std::endl;
+              send_kafka_msg(sp_r, *this, obs);
+              cascades.pop();
+            } else break;
+          } else cascades.pop();
+        }
+        // new created cascade, so it should added to all the partial cascades
+        if(is_symbol_created) cascades.push(c_ptr);
+      }
 
       //////////////////
       /// priority queue
@@ -58,24 +75,6 @@ namespace tweetoscope {
       }
 
       if (is_symbol_created) c_ptr->location = ptr_p->second.queue.push(c_ptr);
-
-      ////////////////////
-      /// partial cascades
-      ////////////////////
-      for(auto& [obs, cascades]: ptr_p->second.partial_cascade){
-        while(!cascades.empty()) {
-          if (auto sp_r = cascades.front().lock()) {
-            cascades.pop();
-            if (std::get<2>(processor).time - sp_r->first_time > obs) {
-              // send the kafka : topic = cascade_properties
-              std::cout << "[cascade_properties] Key = " << obs  << "  Values = " <<  msg_cascade_properties(*sp_r) << std::endl;
-              send_kafka_msg(sp_r, *this, obs);
-            } //else break;
-          } else cascades.pop();
-        }
-        // new created cascade, so it should added to all the partial cascades
-        if(is_symbol_created) cascades.push(c_ptr);
-      }
 
       ////////////////
       /// update queue
