@@ -11,7 +11,7 @@ namespace tweetoscope {
     // queue
     priority_queue queue;
     // partial cascade
-    std::map<timestamp, std::queue<ref>> partial_cascade;
+    std::map<timestamp, std::queue<ref_w>> partial_cascade;
     // symbol table
     std::map<cascade::idf, ref_w> symbol_table;
 
