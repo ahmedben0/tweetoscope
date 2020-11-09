@@ -13,7 +13,7 @@ stages:
 
 build:
     stage: build
-    tag:
+    tags:
         - docker
     script:
         #- docker build -f docker/Dockerfile.cppfile .
@@ -24,7 +24,7 @@ build:
 
 test:
     stage: test
-    tag:
+    tags:
         - docker
     script:
         - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
