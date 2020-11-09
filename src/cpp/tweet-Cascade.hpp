@@ -10,6 +10,8 @@
 
 namespace tweetoscope {
 
+  struct ProcessorsHandler;
+
   struct Cascade;
   // a tweet and all retweets it triggered, build up what is hereafter called a cascade
 
@@ -34,6 +36,7 @@ namespace tweetoscope {
     source::idf source_id;    // the id if the source of the tweet
     std::string msg;          // msg of the tweet
     timestamp latest_time;    // the time of the newest retweet
+    timestamp first_time;     // the starting time of the cascade
     std::vector<tweet> twts;  // a vector containing all the retweets
 
     priority_queue::handle_type location; // This is "where" the element
@@ -48,7 +51,8 @@ namespace tweetoscope {
     Cascade(cascade::idf key, const tweet& t) : key(key),
                                                 source_id(t.source),
                                                 msg(t.msg),
-                                                latest_time(t.time)
+                                                latest_time(t.time),
+                                                first_time(t.time)
     {
       twts.push_back(t);
     };
@@ -57,6 +61,7 @@ namespace tweetoscope {
 
     // define function to send kafka messsage : message = Cascade !
     friend std::ostream& operator<<(std::ostream& os, const Cascade& c);
+    //friend std::ostream& send_cascade(std::ostream& os, const Cascade& c);
   };
 
   // make a shared pointer
@@ -66,6 +71,9 @@ namespace tweetoscope {
 
   std::ostream& operator<<(std::ostream& os, const Cascade& c);
 
-  void send_kafka_msg(ref c_ptr);
+  std::string msg_cascade_series(const Cascade& c);
+  std::string msg_cascade_properties(const Cascade& c);
+
+  void send_kafka_msg(ref c_ptr, const ProcessorsHandler& pr, cascade::idf k);
 
 }

@@ -18,9 +18,7 @@
 #include <vector>
 #include <tuple>
 
-//#include "tweet-Processor.hpp"
 #include "tweet-Processor.cpp"
-//#include "tweet-Cascade.hpp"
 #include "tweet-Cascade.cpp"
 
 int main(int argc, char* argv[]) {
@@ -57,7 +55,8 @@ int main(int argc, char* argv[]) {
   consumer.subscribe({params.topic.in});
 
   // the class ProcessorsHandler takes care of the Processor bsed on the source
-  tweetoscope::ProcessorsHandler processors(params.times.terminated);
+  // tweetoscope::ProcessorsHandler processors(params.times.terminated);
+  tweetoscope::ProcessorsHandler processors(argv[1]);
 
 
   while(true) {
@@ -68,23 +67,8 @@ int main(int argc, char* argv[]) {
        auto istr = std::istringstream(std::string(msg.get_payload()));
        istr >> twt;
 
-       // simple prints to show that the collector works
-       // all the information is in the variable twt
-       // we can access easily to all the parts of the msg
-       /*
-       std::cout << "key: "       << key           << " - "
-                 << "type: "      << twt.type      << " - "
-                 << "msg: "       << twt.msg       << " - "
-                 << "time: "      << twt.time      << " - "
-                 << "magnitude: " << twt.magnitude << " - "
-                 << "source: "    << twt.source    << " - "
-                 << "info: "      << twt.info
-                 << std::endl;
-       */
-
        // we use the maps to handle the processors
        processors += {twt.source, key, twt};
-
        consumer.commit(msg);
 
     }

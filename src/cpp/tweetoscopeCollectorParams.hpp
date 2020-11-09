@@ -68,6 +68,10 @@ namespace tweetoscope {
       section::Times   times;
       section::Cascade cascade;
 
+      collector() = default;
+      collector(const collector& c)            = default;
+      collector& operator=(const collector& c) = default;
+
       collector(const std::string& config_filename) {
       	std::ifstream ifs(config_filename.c_str());
       	if(!ifs)

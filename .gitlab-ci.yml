@@ -1,13 +1,9 @@
 image: fellajimed/cpp-docker-image:latest
 
 before_script:
-    - export PATH=$PATH:/usr/local/bin
-    - export PATH=$PATH:/usr/include/:$PATH
-    - export PATH=$PATH:/usr/bin/:$PATH
+    - export PATH=$PATH:/usr/local/bin:/usr/include/:/usr/bin/
     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/share/pkgconfig
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/include
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib
+    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig:/usr/local/lib:/usr/local/include
 
 
 stages:
@@ -17,13 +13,19 @@ stages:
 
 build:
     stage: build
-    image: fellajimed/wikipedia-docker-agg:latest
+    tags:
+        - docker
     script:
         #- docker build -f docker/Dockerfile.cppfile .
-        - echo "Building"
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make
 
 test:
     stage: test
+    tags:
+        - docker
     script:
         - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
         - g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
