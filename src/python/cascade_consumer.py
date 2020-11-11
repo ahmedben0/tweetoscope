@@ -17,6 +17,9 @@ def msg_deserializer(message) :
     try :
         ## if the key is not not, we can use the following text
         key   = ast.literal_eval(message.key.decode("UTF-8"))
+        ## for series, key (cpp) = NULL => key (python) = 0
+        if key == 0 :
+            key = 'None'
     except :
         ## in case we send NULL (for cascade_series), we cannot use the library ast ast
         ## (we will have the following error : AttributeError: 'NoneType' object has no attribute 'decode')
@@ -40,4 +43,5 @@ for message in consumer:
     ## value['list_retweets'] is a list of dictionnaries => dict_keys(['time', 'magnitude', 'info'])
     key, value = msg_deserializer(message)
     print(key, value)
+    print()
     #break
