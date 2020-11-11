@@ -50,9 +50,9 @@ namespace tweetoscope {
         while(!cascades.empty()) {
           if (auto sp_r = cascades.front().lock()) {
             if (std::get<2>(processor).time - sp_r->first_time > obs) {
-              // send the kafka : topic = cascade_properties
-              std::cout << "[cascade_properties] Key = " << obs  << "  Values = " <<  msg_cascade_properties(*sp_r) << std::endl;
-              send_kafka_msg(sp_r, *this, obs);
+              // send the kafka : topic = cascade_series
+              ///std::cout << "[cascade_series] Key = None  Values = " <<  msg_cascade_series(*sp_r, obs) << std::endl;
+              send_kafka_msg(sp_r, *this, obs, 's');
               cascades.pop();
             } else break;
           } else cascades.pop();
@@ -68,9 +68,12 @@ namespace tweetoscope {
                < std::get<2>(processor).time - ptr_p->second.queue.top()->latest_time) {
 
         auto r = ptr_p->second.queue.top();
-        // send the kafka : topic = cascade_series
-        std::cout << "[cascade_series] Key = None  Values = " << msg_cascade_series(*r) << std::endl;
-        send_kafka_msg(r, *this, r->key);
+        // send the kafka : topic = cascade_properties
+        for (auto obs : this->params_.times.observation) {
+          ///std::cout << "[cascade_properties] Key = " << obs << "  Values = " << msg_cascade_properties(*r) << std::endl;
+          // loop over all the observation
+          send_kafka_msg(r, *this, obs, 'p');
+        }
         ptr_p->second.queue.pop();
       }
 
