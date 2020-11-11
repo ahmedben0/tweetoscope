@@ -14,8 +14,14 @@ def msg_deserializer(message) :
     # message is of type ConsumerRecord
     # => message.key & message.value is of type bytes
     # we then decide to use the library -- ast to convert to a dictionnary
-
-    key   = ast.literal_eval(message.key.decode("UTF-8"))
+    try :
+        ## if the key is not not, we can use the following text
+        key   = ast.literal_eval(message.key.decode("UTF-8"))
+    except :
+        ## in case we send NULL (for cascade_series), we cannot use the library ast ast
+        ## (we will have the following error : AttributeError: 'NoneType' object has no attribute 'decode')
+        ## so we just catch it and then set the key to None
+        key = 'None'
     value = ast.literal_eval(message.value.decode("UTF-8"))
     return (key, value)
 
