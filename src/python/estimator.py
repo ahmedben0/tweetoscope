@@ -91,40 +91,29 @@ consumer.subscribe("cascade_series")
 
 
 ## Create producer
-# producerProperties = { "bootstrap_servers":['localhost:9092'] } 
+producerProperties = {"bootstrap_servers":['localhost:9092']} 
 
-# producer = KafkaProducer(**producerProperties)
+producer = KafkaProducer(**producerProperties)
 
 #%%
 ## Read cascades from cascade_series
 for message in consumer:
-    # message = key, value
-    ## value.keys() = dict_keys(['key', 'source_id', 'msg', 'latest_time', 'list_retweets'])
-    ## value['list_retweets'] is a list of dictionnaries => dict_keys(['time', 'magnitude', 'info'])
-    message
-    key, value = msg_deserializer(message)
-    print(key)
-    print(value)
+   # message = key, value
+   ## value.keys() = dict_keys(['key', 'source_id', 'msg', 'latest_time', 'list_retweets'])
+   ## value['list_retweets'] is a list of dictionnaries => dict_keys(['time', 'magnitude', 'info'])
+   message
+   key, value = msg_deserializer(message)
+   print(key)
+   print(value)
+   cascade = np.array(value['tweets'])
+   
+   #estimate parameters
+   estimated_params = compute_MAP(cascade)[1]
+   
+   #produce message to cascade properties
+   n_supp = simple_prediction(estimated_params, cascade)
+   valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': len(cascade), 'n_supp' : n_supp, 'params': estimated_params}
+   producer.send('cascade_properties', value=valeurs, key=key)
+   print(valeurs)
 
-    cascade = np.array(value['tweets'])
-    estimated_params = compute_MAP(cascade)[1]
-    
-    print(estimated_params)
-    break
-
-
-    # message =  {'Key':key, 'type': 'parameters', 'cid': value['cid'], 'params': estimated_params}
-
-
-# %%
-try:
-   while True:
-      records = consumer.poll(1)
-      if records is None: continue
-      else:
-         for topicPartition, consumerRecords in records.items():
-            for record in consumerRecords:
-               print("%s" % (record.value.decode()))
-finally:
-   consumer.close()
 # %%
