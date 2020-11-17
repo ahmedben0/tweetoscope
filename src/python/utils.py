@@ -153,10 +153,11 @@ def compute_MAP(history, alpha=2.4, mu=10,
     return(-res.fun, res.x)
 
 
+## Predictor
 
-## This is a first simple predictor that takes the parameters of the generating process (p, beta)
-
-def simple_prediction(params, history, alpha=2.4, mu=10, t=None):
+##This is the function for computing the estimated size of the cascade
+## For simple estimator (direct computation without radnom forest) use w_obs=1
+def estimated_size(params, history, alpha=2.4, mu=10, t=None, w_obs=1):
     """
     Returns the expected total numbers of points for a set of time points
     
@@ -183,7 +184,18 @@ def simple_prediction(params, history, alpha=2.4, mu=10, t=None):
         G1 += m_i*(np.exp(-beta*(t-t_i)))
     G1*=p
     
-    N_infini = n + G1/(1-n_star)
+    N_infini = n + w_obs*(G1/(1-n_star))
     
     return N_infini
     
+
+
+def compute_are(n_tot, n_true):
+    """
+    Return the Absolute Relative Error
+
+    n_tot -- int, predicted size of the cascade
+    n_true -- int, real size of the  cascade
+    """
+
+    return abs(n_tot - n_true)/n_true

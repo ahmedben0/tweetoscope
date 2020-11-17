@@ -111,7 +111,7 @@ for message in consumer:
    estimated_params = compute_MAP(cascade)[1]
    
    #produce message to cascade properties
-   n_supp = simple_prediction(estimated_params, cascade)
+   n_supp = estimated_size(estimated_params, cascade)
    valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': len(cascade), 'n_supp' : n_supp, 'params': estimated_params}
    producer.send('cascade_properties', value=valeurs, key=key)
    print(valeurs)

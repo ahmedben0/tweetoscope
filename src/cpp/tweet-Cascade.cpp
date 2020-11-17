@@ -92,7 +92,7 @@ namespace tweetoscope {
 
     if (c_type == 's') {
       cppkafka::MessageBuilder builder_c {pr.params_.topic.out_series};
-
+     
       auto key = std::to_string(NULL);
       builder_c.key(key);
       std::ostringstream ostr;
@@ -104,7 +104,7 @@ namespace tweetoscope {
 
     if (c_type == 'p') {
       cppkafka::MessageBuilder builder_c {pr.params_.topic.out_properties};
-
+  
       auto key = std::to_string(obs);
       builder_c.key(key);
       std::ostringstream ostr;
