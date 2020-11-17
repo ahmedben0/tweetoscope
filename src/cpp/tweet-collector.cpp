@@ -58,7 +58,6 @@ int main(int argc, char* argv[]) {
   // tweetoscope::ProcessorsHandler processors(params.times.terminated);
   tweetoscope::ProcessorsHandler processors(argv[1]);
 
-  int i(0);
   while(true) {
     auto msg = consumer.poll();
     if( msg && ! msg.get_error() ) {

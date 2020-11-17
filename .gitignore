@@ -5,3 +5,5 @@ build/
 *swp
 *idx
 *.dSYM
+__pycache__/
+tweet-collector.dSYM/
