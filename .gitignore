@@ -4,3 +4,8 @@ build/
 .csv
 *swp
 *idx
+*.dSYM
+__pycache__/
+tweet-collector.dSYM/
+
+*.o
