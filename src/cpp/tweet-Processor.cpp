@@ -52,7 +52,8 @@ namespace tweetoscope {
             if (std::get<2>(processor).time - sp_r->first_time > obs) {
               // send the kafka : topic = cascade_series
               ///std::cout << "[cascade_series] Key = None  Values = " <<  msg_cascade_series(*sp_r, obs) << std::endl;
-              send_kafka_msg(sp_r, *this, obs, 's');
+              // to send the topic the size of the cascade should be higher than min_cascade_size
+              if (sp_r->twts.size() > this->params_.cascade.min_cascade_size) send_kafka_msg(sp_r, *this, obs, 's');
               cascades.pop();
             } else break;
           } else cascades.pop();
@@ -72,7 +73,8 @@ namespace tweetoscope {
         for (auto obs : this->params_.times.observation) {
           ///std::cout << "[cascade_properties] Key = " << obs << "  Values = " << msg_cascade_properties(*r) << std::endl;
           // loop over all the observation
-          send_kafka_msg(r, *this, obs, 'p');
+          // to send the topic the size of the cascade should be higher than min_cascade_size
+          if (r->twts.size() > this->params_.cascade.min_cascade_size) send_kafka_msg(r, *this, obs, 'p');
         }
         ptr_p->second.queue.pop();
       }

@@ -27,8 +27,8 @@ def msg_serializer(message):
     ## the kafka message going to the cascade topic
     ## message = key, value
     messageJSON = dumps(message)
-    messageBytes = messageJson.encode('utf-8')
-    return message
+    messageBytes = messageJSON.encode('utf-8')
+    return messageBytes
 
 
 
@@ -41,27 +41,26 @@ def loglikelihood(params, history, t=None):
     """
     Returns the loglikelihood of a Hawkes process with exponential kernel
     computed with a linear time complexity
-        
+
     params   -- parameter tuple (p,beta) of the Hawkes process
-    history  -- (n,2) numpy array containing marked time points (t_i,m_i)  
+    history  -- (n,2) numpy array containing marked time points (t_i,m_i)
     t        -- current time (i.e end of observation window)
     """
-    
+
     p,beta = params
-    
+
     if p <= 0 or p >= 1 or beta <= 0.: return -np.inf
-    
+
     if t is None:
-        t = history[-1, 0] 
+        t = history[-1, 0]
 
     history_at_t = history[history[:, 0] <= t]
-    
+
     n = len(history_at_t)
     tis = history_at_t[:,0]
     mis = history_at_t[:,1]
-    
+
     loglikelihood = (n-1)*np.log(p*beta)
-    
 
     #A1
     previous_ai = np.exp(-beta*(tis[1]-tis[0]))*(mis[0])
@@ -70,9 +69,9 @@ def loglikelihood(params, history, t=None):
             print("Bad value",mis[i-1]  + previous_ai)
         previous_ai = np.exp(-beta*(tis[i]-tis[i-1]))*(mis[i-1]+previous_ai)
         loglikelihood += np.log(previous_ai)
-    
+
     loglikelihood -= p*(np.sum(mis) - np.exp(-beta*(t-tis[n-1]))*(mis[n-1]+previous_ai))
-                        
+
     return loglikelihood
 
 
@@ -83,7 +82,7 @@ def compute_MAP(history, alpha=2.4, mu=10,
     """
     Returns the pair of the estimated logdensity of a posteriori and parameters (as a numpy array)
 
-    history      -- (n,2) numpy array containing marked time points (t_i,m_i)  
+    history      -- (n,2) numpy array containing marked time points (t_i,m_i)
     t            -- current time (i.e end of observation window)
     alpha        -- power parameter of the power-law mark distribution
     mu           -- min value parameter of the power-law mark distribution
@@ -97,28 +96,29 @@ def compute_MAP(history, alpha=2.4, mu=10,
     max_n_star   -- maximum authorized value of the branching factor (defines the upper bound of p)
     display      -- verbose flag to display optimization iterations (see 'disp' options of optim.optimize)
     """
-    
+
     # Compute prior moments
     mu_p, mu_beta, sig_p, sig_beta, corr = prior_params
-    
+
     mu_sample = np.array([mu_p, mu_beta])
     cov_p_beta = corr*sig_p*sig_beta
-    
+
     Q = [[sig_p**2, cov_p_beta],
          [cov_p_beta, sig_beta**2]]
-    
+
     # Apply method of moments
-    
+
     sigma_prior = np.log(Q / mu_sample / mu_sample.reshape((-1, 1)) + 1)
     mu_prior = np.log(mu_sample) - np.diag(sigma_prior) / 2.
-    
+
     # Compute the covariance inverse (precision matrix) once for all
     inv_cov_prior = np.asmatrix(sigma_prior).I
-    
-    # Define the target function to minimize as minus the log of the a posteriori density    
+
+    # Define the target function to minimize as minus the log of the a posteriori density
     def target(params):
-        log_params = np.log(params)
-        
+        ## a is added in case params equals to 0
+        log_params = np.log(1+params)
+
         if np.any(np.isnan(log_params)):
             return np.inf
         else:
@@ -126,8 +126,8 @@ def compute_MAP(history, alpha=2.4, mu=10,
             prior_term = float(- 1/2 * dparams * inv_cov_prior * dparams.T)
             logLL = loglikelihood(params, history, t)
             return - (prior_term + logLL)
-    
-    
+
+
     # Run the optimization
     EM = mu * (alpha - 1) / (alpha - 2)
     eps = 1.E-8
@@ -135,13 +135,13 @@ def compute_MAP(history, alpha=2.4, mu=10,
     # Set realistic bounds on p and beta
     p_min, p_max       = eps, max_n_star/EM - eps
     beta_min, beta_max = 1/(3600. * 24 * 10), 1/(60. * 1)
-    
+
     # Define the bounds on p (first column) and beta (second column)
     bounds = optim.Bounds(
         np.array([p_min, beta_min]),
         np.array([p_max, beta_max])
     )
-    
+
     # Run the optimization
     res = optim.minimize(
         target, mu_sample,
@@ -160,34 +160,34 @@ def compute_MAP(history, alpha=2.4, mu=10,
 def estimated_size(params, history, alpha=2.4, mu=10, t=None, w_obs=1):
     """
     Returns the expected total numbers of points for a set of time points
-    
+
     params   -- parameter tuple (p,beta) of the Hawkes process
-    history  -- (n,2) numpy array containing marked time points (t_i,m_i)  
+    history  -- (n,2) numpy array containing marked time points (t_i,m_i)
     alpha    -- power parameter of the power-law mark distribution
     mu       -- min value parameter of the power-law mark distribution
     t        -- current time (i.e end of observation window)
     """
 
     p,beta = params
-    
+
     n_star = p*mu*(alpha-1)/(alpha-2)
-    
+
     if t is None:
-        t = history[-1, 0] 
-    
+        t = history[-1, 0]
+
     history_at_t = history[history[:, 0] <= t]
-    
+
     n = len(history_at_t)
-    
+
     G1=0
     for t_i, m_i in history_at_t:
         G1 += m_i*(np.exp(-beta*(t-t_i)))
     G1*=p
-    
+
     N_infini = n + w_obs*(G1/(1-n_star))
-    
+
     return N_infini
-    
+
 
 
 def compute_are(n_tot, n_true):
