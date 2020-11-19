@@ -7,4 +7,5 @@ build/
 *.dSYM
 __pycache__/
 tweet-collector.dSYM/
+
 *.o
