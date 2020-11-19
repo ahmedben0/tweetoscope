@@ -17,7 +17,7 @@ consumer_samples.subscribe("samples")
 
 
 ##Create Producer
-producerProperties = {"bootstrap_servers":['localhost:9092']} 
+producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer_models = KafkaProducer(**producerProperties)
 
@@ -32,10 +32,13 @@ target_columns = ['W']
 ## create dataset from samples
 for message in consumer_samples:
     key, value = msg_deserializer(message)
-    
+
+    print(value)
+
     X = [key]+value['X']+[value['W']]
     sample = pd.DataFrame([X], columns=X_samples.columns)
     X_samples = X_samples.append(sample, ignore_index=True)
+
 
 ##Train models
 for t_obs in X_samples.T_obs.unique():
@@ -47,9 +50,3 @@ for t_obs in X_samples.T_obs.unique():
     model.fit(features, target)
 
     producer_models.send("models", value=msg_serializer(model), key=msg_serializer(t_obs))
-
-
-
-
-
-
