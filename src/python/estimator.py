@@ -10,7 +10,6 @@ config = configparser.ConfigParser(strict=False)
 ## the script is executed from the folder "src"
 config.read('./configs/collector.ini')
 
-#%%
 ## Create consumer
 consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
@@ -28,14 +27,22 @@ producer = KafkaProducer(**producerProperties)
 
 ## Read cascades from cascade_series
 for message in consumer:
-    # message = key, value
-    key, value = msg_deserializer(message)
+   # message = key, value
+   ## value.keys() = dict_keys(['key', 'source_id', 'msg', 'latest_time', 'list_retweets'])
+   ## value['list_retweets'] is a list of dictionnaries => dict_keys(['time', 'magnitude', 'info'])
+   key, value = msg_deserializer(message)
+   cascade = np.array(value['tweets'])
+   
+   #estimate parameters p, beta
+   estimated_params = compute_MAP(cascade)[1]
+   
+   #compute G1
+   G1 = compute_G1(estimated_params, cascade)
+   estimated_params.append(G1)
 
-    cascade = np.array(value['tweets'])
-    estimated_params = compute_MAP(cascade)[1]
-
-    #produce message to cascade properties
-    n_supp = estimated_size(estimated_params, cascade)
-    valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': len(cascade), 'n_supp' : n_supp, 'params': estimated_params.tolist()}
-    producer.send(config["topic"]["out_properties"], value=msg_serializer(valeurs), key=msg_serializer(value['T_obs']))
-    print(valeurs)
+   #produce message to cascade properties
+   n_obs = len(cascade)
+   n_supp = estimated_size(n_obs, estimated_params)
+   valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': n_obs, 'n_supp' : n_supp, 'params': estimated_params.tolist()}
+   producer.send(config["topic"]["out_properties"], value=msg_serializer(valeurs), key=msg_serializer(value['T_obs']))
+   print(valeurs)
