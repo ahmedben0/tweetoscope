@@ -4,22 +4,25 @@
 #%%
 from utils import *
 from json import dumps
+import configparser
 
-import numpy as np
-np.set_printoptions(precision=3)
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
 
 #%%
 ## Create consumer
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
 
 consumer = KafkaConsumer(**consumerProperties)
-consumer.subscribe("cascade_series")
+consumer.subscribe(config["topic"]["out_series"])
 
 
 ## Create producer
-producerProperties = {"bootstrap_servers":['localhost:9092']}
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
 
 producer = KafkaProducer(**producerProperties)
 
@@ -35,5 +38,5 @@ for message in consumer:
     #produce message to cascade properties
     n_supp = estimated_size(estimated_params, cascade)
     valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': len(cascade), 'n_supp' : n_supp, 'params': estimated_params.tolist()}
-    producer.send("cascade_properties", value=msg_serializer(valeurs), key=msg_serializer(value['T_obs']))
+    producer.send(config["topic"]["out_properties"], value=msg_serializer(valeurs), key=msg_serializer(value['T_obs']))
     print(valeurs)
