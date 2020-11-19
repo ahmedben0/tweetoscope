@@ -17,7 +17,7 @@ consumer_models.subscribe("models")
 
 
 ## Create producers
-producerProperties = {"bootstrap_servers":['localhost:9092']} 
+producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer_sample = KafkaProducer(**producerProperties)
 producer_alert = KafkaProducer(**producerProperties)
@@ -30,12 +30,11 @@ for message in consumer_models:
     key, value = msg_deserializer(message)
     models[key] = value
 
-
 #here, we create a dictionanry with the cascade id and observation time as key, and the parameters we need as values (params, n_true, n_obs)
 #In fact, we have two types of messages in cascade_properties : size, parameters. We collect the values that interest us in both
 cascades = {}
 for message in consumer_cascadeProperties:
-    key, value = msg_deserializer(message) 
+    key, value = msg_deserializer(message)
     dict_key = (value['cid'], key) #we identify each cascade by its id and the key(observation window)
     if dict_key not in cascades.keys():
         cascades[dict_key] = {}
@@ -49,10 +48,10 @@ for message in consumer_cascadeProperties:
 
 
 for key, value in cascades.items():
-    
+
     cid = key[0] #cascade id
     T_obs = key[1] #observation window size
-    
+
     X = value['params'] #p, beta, G1
     n_true = value['n_true']
     n_obs = value['n_obs']
@@ -67,7 +66,7 @@ for key, value in cascades.items():
 
     #We compute the ARE (messages of type stat)
     w_obs = models[T_obs].predict(X) #predict the w_obs for the obs window
-    n_pred = estimated_size(n_obs, X, w_obs=w_obs) 
+    n_pred = estimated_size(n_obs, X, w_obs=w_obs)
     are = compute_are(n_pred, n_true)
     valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
     producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
