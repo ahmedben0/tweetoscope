@@ -1,7 +1,6 @@
 ## This function estimates the parameters (p, beta) of the generating process for the cascade.
 ## We use the MAP estimator.
 
-#%%
 from utils import *
 from json import dumps
 import configparser
