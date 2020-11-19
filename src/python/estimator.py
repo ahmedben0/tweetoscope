@@ -1,7 +1,6 @@
 ## This funiton estimates the parameters (p, beta) of the generating process for the cascade.
 ## We use the MAP estimator.
 
-#%%
 from utils import *
 
 # ##Simulate cascade
@@ -80,7 +79,6 @@ from utils import *
 # cascade = simulate_marked_exp_hawkes_process(params, m0, alpha, mu, max_size=10000)
 
 
-#%%
 ## Create consumer
 consumerProperties = { "bootstrap_servers":['localhost:9092'],
                        "auto_offset_reset":"earliest",
@@ -95,25 +93,25 @@ producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer = KafkaProducer(**producerProperties)
 
-#%%
+
 ## Read cascades from cascade_series
 for message in consumer:
    # message = key, value
    ## value.keys() = dict_keys(['key', 'source_id', 'msg', 'latest_time', 'list_retweets'])
    ## value['list_retweets'] is a list of dictionnaries => dict_keys(['time', 'magnitude', 'info'])
-   message
    key, value = msg_deserializer(message)
-   print(key)
-   print(value)
    cascade = np.array(value['tweets'])
    
-   #estimate parameters
+   #estimate parameters p, beta
    estimated_params = compute_MAP(cascade)[1]
    
+   #compute G1
+   G1 = compute_G1(estimated_params, cascade)
+   estimated_params.append(G1)
+
    #produce message to cascade properties
-   n_supp = estimated_size(estimated_params, cascade)
-   valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': len(cascade), 'n_supp' : n_supp, 'params': estimated_params}
+   n_obs = len(cascade)
+   n_supp = estimated_size(n_obs, estimated_params)
+   valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': n_obs, 'n_supp' : n_supp, 'params': estimated_params}
    producer.send('cascade_properties', value=valeurs, key=key)
    print(valeurs)
-
-# %%
