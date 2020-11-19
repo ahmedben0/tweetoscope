@@ -58,19 +58,18 @@ int main(int argc, char* argv[]) {
   // tweetoscope::ProcessorsHandler processors(params.times.terminated);
   tweetoscope::ProcessorsHandler processors(argv[1]);
 
-
   while(true) {
     auto msg = consumer.poll();
     if( msg && ! msg.get_error() ) {
-       tweetoscope::tweet twt;
-       auto key = tweetoscope::cascade::idf(std::stoi(msg.get_key()));
-       auto istr = std::istringstream(std::string(msg.get_payload()));
-       istr >> twt;
+      // std::cout << i++ << std::endl;
+      tweetoscope::tweet twt;
+      auto key = tweetoscope::cascade::idf(std::stoi(msg.get_key()));
+      auto istr = std::istringstream(std::string(msg.get_payload()));
+      istr >> twt;
 
-       // we use the maps to handle the processors
-       processors += {twt.source, key, twt};
-       consumer.commit(msg);
-
+      // we use the maps to handle the processors
+      processors += {twt.source, key, twt};
+      consumer.commit(msg);
     }
 }
 
