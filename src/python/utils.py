@@ -12,12 +12,9 @@ def msg_deserializer(message) :
     ## the kafka message comming from the cascade topic
     ## message = key, value
 
-    # message is of type ConsumerRecord
-    # => message.key & message.value is of type bytes
-    # we then decide to use the library -- ast to convert to a dictionnary
-
-    key   = ast.literal_eval(message.key.decode("UTF-8"))
+    key = loads(message.key.decode('utf-8'))
     value = ast.literal_eval(message.value.decode("UTF-8"))
+    #value = loads(message.value.decode('utf-8').replace('\'', '\"'))
     return (key, value)
 
 

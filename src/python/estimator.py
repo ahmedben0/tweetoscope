@@ -1,4 +1,4 @@
-## This funiton estimates the parameters (p, beta) of the generating process for the cascade.
+## This function estimates the parameters (p, beta) of the generating process for the cascade.
 ## We use the MAP estimator.
 
 #%%
@@ -22,19 +22,18 @@ consumer.subscribe("cascade_series")
 producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer = KafkaProducer(**producerProperties)
-topic_name_estimator = "cascade_estimator"
 
 
 ## Read cascades from cascade_series
 for message in consumer:
-   # message = key, value
-   key, value = msg_deserializer(message)
-   cascade = np.array(value['tweets'])
-   
-   estimated_params = compute_MAP(cascade)[1]
+    # message = key, value
+    key, value = msg_deserializer(message)
 
-   #produce message to cascade properties
-   n_supp = estimated_size(estimated_params, cascade)
-   valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': len(cascade), 'n_supp' : n_supp, 'params': estimated_params.tolist()}
-   producer.send(topic_name_estimator, value=msg_serializer(valeurs), key=msg_serializer(key))
-   print(valeurs)
+    cascade = np.array(value['tweets'])
+    estimated_params = compute_MAP(cascade)[1]
+
+    #produce message to cascade properties
+    n_supp = estimated_size(estimated_params, cascade)
+    valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': len(cascade), 'n_supp' : n_supp, 'params': estimated_params.tolist()}
+    producer.send("cascade_properties", value=msg_serializer(valeurs), key=msg_serializer(value['T_obs']))
+    print(valeurs)
