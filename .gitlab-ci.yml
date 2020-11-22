@@ -21,6 +21,7 @@ build:
         - cd build
         - cmake ..
         - make
+        - echo $Dockerhub_password
 
 test:
     stage: test
