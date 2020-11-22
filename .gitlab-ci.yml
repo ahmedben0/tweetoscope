@@ -23,7 +23,10 @@ build:
         - echo $Dockerhub_password
 
 build_docker:
+    image: docker:latest
     stage: build
+    services:
+    - docker:dind
     script:
         - docker build -f docker/Dockerfile.cppfile .
         - (if [ $(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
