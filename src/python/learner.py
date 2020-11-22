@@ -40,13 +40,15 @@ for message in consumer_samples:
     X_samples = X_samples.append(sample, ignore_index=True)
 
 
-##Train models
-for t_obs in X_samples.T_obs.unique():
+    ##Train models
+    for t_obs in X_samples.T_obs.unique():
 
-    X_Tobs = X_samples[X_samples['T_obs']==t_obs] #we extract the samples corresponding to t_obs observation window size
-    features = X_Tobs[features_columns]
-    target = X_Tobs[target_columns]
-    model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
-    model.fit(features, target)
+        X_Tobs = X_samples[X_samples['T_obs']==t_obs] #we extract the samples corresponding to t_obs observation window size
+        features = X_Tobs[features_columns]
+        target = X_Tobs[target_columns]
+        model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
+        model.fit(features, target)
 
-    producer_models.send("models", value=msg_serializer(model), key=msg_serializer(t_obs))
+        producer_models.send("models", value=msg_serializer(model), key=msg_serializer(t_obs))
+
+
