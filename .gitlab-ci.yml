@@ -16,12 +16,16 @@ build:
     tags:
         - docker
     script:
-        - docker build -f docker/Dockerfile.cppfile .
         - mkdir build
         - cd build
         - cmake ..
         - make
         - echo $Dockerhub_password
+
+build_docker:
+    stage: build
+    script:
+        - docker build -f docker/Dockerfile.cppfile .
         - (if [ $(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
 
 test:
