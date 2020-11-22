@@ -25,14 +25,15 @@ producer_stat = KafkaProducer(**producerProperties)
 
 
 ##create a dict associating each model in models to the right observation window (we train a model for each observation window designated by the key)
-models = {}
-for message in consumer_models:
-    key, value = msg_deserializer(message)
-    models[key] = value
+# models = {}
+# for message in consumer_models:
+#     key, value = msg_deserializer(message)
+#     models[key] = value
 
 #here, we create a dictionanry with the cascade id and observation time as key, and the parameters we need as values (params, n_true, n_obs)
 #In fact, we have two types of messages in cascade_properties : size, parameters. We collect the values that interest us in both
 cascades = {}
+ 
 for message in consumer_cascadeProperties:
     key, value = msg_deserializer(message)
     dict_key = (value['cid'], key) #we identify each cascade by its id and the key(observation window)
@@ -45,32 +46,82 @@ for message in consumer_cascadeProperties:
         cascades[dict_key]['params'] = value['params'] #p, beta, G1
 
 
+    wanted_keys = ['n_true', 'n_obs', 'params']
+    if any(elem in wanted_keys  for elem in cascades[dict_key].keys()):
+        key, value = dict_key, cascades[dict_key]
+
+        cid = key[0] #cascade id
+        T_obs = key[1] #observation window size
 
 
-for key, value in cascades.items():
-
-    cid = key[0] #cascade id
-    T_obs = key[1] #observation window size
-
-    X = value['params'] #p, beta, G1
-    n_true = value['n_true']
-    n_obs = value['n_obs']
-
-    W = compute_true_omega(n_obs, n_true, X) #the W we want to predict
-
-    #we compute here the message of type "sample", i.e a sample to feed the random forest
-    #inputs: params, target: omega
-    valeurs_sample =  {'type': 'sample', 'cid': cid, 'X' : X, 'W': W}
-    producer_sample.send("samples", value=msg_serializer(valeurs_sample), key=msg_serializer(T_obs))
+        for message in consumer_models:
+            key, value = msg_deserializer(message)
+            if key==T_obs:
+                model = value
+                break
 
 
-    #We compute the ARE (messages of type stat)
-    w_obs = models[T_obs].predict(X) #predict the w_obs for the obs window
-    n_pred = estimated_size(n_obs, X, w_obs=w_obs)
-    are = compute_are(n_pred, n_true)
-    valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
-    producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
+
+        X = value['params'] #p, beta, G1
+        n_true = value['n_true']
+        n_obs = value['n_obs']
+
+        W = compute_true_omega(n_obs, n_true, X) #the W we want to predict
+
+        #we compute here the message of type "sample", i.e a sample to feed the random forest
+        #inputs: params, target: omega
+        valeurs_sample =  {'type': 'sample', 'cid': cid, 'X' : X, 'W': W}
+        producer_sample.send("samples", value=msg_serializer(valeurs_sample), key=msg_serializer(T_obs))
 
 
-    #we compute the alert message
-    #TO DO
+        #We compute the ARE (messages of type stat)
+        w_obs = model.predict(X) #predict the w_obs for the obs window
+        n_pred = estimated_size(n_obs, X, w_obs=w_obs)
+        are = compute_are(n_pred, n_true)
+        valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
+        producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
+
+
+        #we compute the alert message
+        #TO DO
+
+
+
+
+
+# for key, value in cascades.items():
+
+#     cid = key[0] #cascade id
+#     T_obs = key[1] #observation window size
+
+
+#     for message in consumer_models:
+#         key, value = msg_deserializer(message)
+#         if key==T_obs:
+#             model = value
+#             break
+
+
+
+#     X = value['params'] #p, beta, G1
+#     n_true = value['n_true']
+#     n_obs = value['n_obs']
+
+#     W = compute_true_omega(n_obs, n_true, X) #the W we want to predict
+
+#     #we compute here the message of type "sample", i.e a sample to feed the random forest
+#     #inputs: params, target: omega
+#     valeurs_sample =  {'type': 'sample', 'cid': cid, 'X' : X, 'W': W}
+#     producer_sample.send("samples", value=msg_serializer(valeurs_sample), key=msg_serializer(T_obs))
+
+
+#     #We compute the ARE (messages of type stat)
+#     w_obs = model.predict(X) #predict the w_obs for the obs window
+#     n_pred = estimated_size(n_obs, X, w_obs=w_obs)
+#     are = compute_are(n_pred, n_true)
+#     valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
+#     producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
+
+
+#     #we compute the alert message
+#     #TO DO
