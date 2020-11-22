@@ -22,7 +22,7 @@ build:
         - cmake ..
         - make
         - echo $Dockerhub_password
-        - (if [ "$flag" == "true" ]; then echo $Dockerhub_username; fi);
+        - (if [ git diff HEAD^ HEAD docker/Dockerfile.cppfile != "" ]; then echo $Dockerhub_username; fi);
 
 test:
     stage: test
