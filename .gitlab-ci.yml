@@ -22,11 +22,10 @@ build:
         - cmake ..
         - make
         - echo $Dockerhub_password
-        - (if [ $(git diff master --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
+        - (if [ (git diff master --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
 
 test:
     stage: test
-    variables: GIT_DEPTH: 0
     tags:
         - docker
     script:
