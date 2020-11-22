@@ -35,7 +35,8 @@ build_docker:
         - docker push $Dockerhub_username/$Docker_image_name:latest
         #- (if [ $(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
     rules:
-        - if: '$(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile)'
+        - changes:
+            - docker/Dockerfile.cppfile
 
 test:
     image: fellajimed/cpp-docker-image:latest
