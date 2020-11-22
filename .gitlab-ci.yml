@@ -16,7 +16,7 @@ build:
     tags:
         - docker
     script:
-        #- docker build -f docker/Dockerfile.cppfile .
+        - docker build -f docker/Dockerfile.cppfile .
         - mkdir build
         - cd build
         - cmake ..
