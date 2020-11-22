@@ -26,12 +26,19 @@ build_docker:
     image: docker:latest
     stage: build
     services:
-    - docker:dind
+        - docker:dind
+    before_script:
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
     script:
-        - docker build -f docker/Dockerfile.cppfile .
-        - (if [ $(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
+        - apk update && apk add git
+        - docker build -f docker/Dockerfile.cppfile -t $Dockerhub_username/$Docker_image_name:latest .
+        - docker push $Dockerhub_username/$Docker_image_name:latest
+        #- (if [ $(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
+    rules:
+        - if: '$(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile)'
 
 test:
+    image: fellajimed/cpp-docker-image:latest
     stage: test
     tags:
         - docker
