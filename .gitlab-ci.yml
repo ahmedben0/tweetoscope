@@ -1,4 +1,4 @@
-image: fellajimed/cpp-docker-image:latest
+image: $Dockerhub_username/$Docker_image_name:latest
 
 before_script:
     - export PATH=$PATH:/usr/local/bin:/usr/include/:/usr/bin/
@@ -11,20 +11,36 @@ stages:
     - test
 
 
+build_docker:
+    image: docker:latest
+    stage: build
+    services:
+        - docker:dind
+    before_script:
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+    script:
+        - apk update && apk add git
+        - docker build -f docker/Dockerfile.main -t $Dockerhub_username/$Docker_image_name:latest .
+        - docker push $Dockerhub_username/$Docker_image_name:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.main
+
+
 build:
+    image: $Dockerhub_username/$Docker_image_name:latest
     stage: build
     tags:
         - docker
     script:
-        #- docker build -f docker/Dockerfile.cppfile .
         - mkdir build
         - cd build
         - cmake ..
         - make
-        - echo $Dockerhub_password
-        - (if [ $(git diff HEAD^ HEAD --name-only | grep -e docker/Dockerfile.cppfile) ]; then echo $Dockerhub_username; else echo "teeeest"; fi);
+
 
 test:
+    image: $Dockerhub_username/$Docker_image_name:latest
     stage: test
     tags:
         - docker
