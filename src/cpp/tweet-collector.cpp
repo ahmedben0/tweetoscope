@@ -22,12 +22,8 @@
 #include "tweet-Cascade.cpp"
 
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 
 int main(int argc, char* argv[]) {
-
-  std::shared_ptr<spdlog::logger> stdout_logger = spdlog::stdout_color_mt("stdout");
-  spdlog::set_default_logger(stdout_logger);
 
   // disable logs
   //spdlog::set_level(spdlog::level::off);
