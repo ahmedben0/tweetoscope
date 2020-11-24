@@ -35,16 +35,15 @@ build:
     script:
         - mkdir build
         - cd build
-        ## this must be fixed for spdlog :/ no idea why it is not working
-        #- cmake ..
-        #- make
+        - cmake ..
+        - make
 
 
 test:
     image: $Dockerhub_username/$Docker_image_name:latest
     stage: test
     tags:
-        - shell
+        - docker
     script:
         - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml spdlog cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
         - g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml spdlog cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp

@@ -30,7 +30,7 @@ RUN git clone https://github.com/HerveFrezza-Buet/gaml gaml \
 ## spdlog
 RUN git clone https://github.com/gabime/spdlog.git \
     && cd spdlog && mkdir build && cd build \
-    && cmake .. && make -j
+    && cmake .. && make -j && make install
 
 ## OpenJDK-11
 RUN apt-get update && \
