@@ -8,6 +8,8 @@ find_package(PkgConfig)
 pkg_check_modules(GAML      REQUIRED gaml)
 pkg_check_modules(CPPKAFKA  REQUIRED cppkafka)
 pkg_check_modules(RDKAFKA   REQUIRED rdkafka)
+
+include_directories(${CMAKE_SOURCE_DIR}/libs)
 pkg_check_modules(SPDLOG    REQUIRED spdlog)
 
 link_libraries(${CPPKAFKA_LIBRARIES} pthread)
