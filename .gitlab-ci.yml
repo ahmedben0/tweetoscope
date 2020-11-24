@@ -4,7 +4,7 @@ before_script:
     - export PATH=$PATH:/usr/local/bin:/usr/include/:/usr/bin/
     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/share/pkgconfig
     - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig:/usr/local/lib:/usr/local/include
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/lib/x86_64-linux-gnu/pkgconfig
+    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/spdlog/build
 
 
 stages:
