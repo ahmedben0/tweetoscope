@@ -15,7 +15,7 @@ namespace tweetoscope {
     // the operator << will allow us to (1) print the cascade
     // and (2 - most importantly) send the cascade as a kafka message
 
-    os << "\"{\'key\' : "        << c.key         << " , "
+    os << "\"{\'key\' : "      << c.key         << " , "
        << "\'source_id\' : "   << c.source_id   << " , "
        << "\'msg\' : "         << c.msg         << " , "
        << "\'latest_time\' : " << c.latest_time << " , "
@@ -73,7 +73,8 @@ namespace tweetoscope {
   }
 
   bool element_ref_comparator::operator()(ref op1, ref op2) const {
-    return *op1 < *op2;
+    // to be checked !!
+    return *op2 < *op1;
   }
 
 
