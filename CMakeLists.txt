@@ -8,6 +8,7 @@ find_package(PkgConfig)
 pkg_check_modules(GAML      REQUIRED gaml)
 pkg_check_modules(CPPKAFKA  REQUIRED cppkafka)
 pkg_check_modules(RDKAFKA   REQUIRED rdkafka)
+pkg_check_modules(SPDLOG    REQUIRED spdlog)
 
 link_libraries(${CPPKAFKA_LIBRARIES} pthread)
 link_libraries(${RDKAFKA_LIBRARIES} pthread)
@@ -22,3 +23,5 @@ include_directories(${CPPKAFKA_INCLUDE_DIRS} ${GAML_INCLUDE_DIRS} ${RDKAFKA_STAT
 add_compile_options(-O3 -Wall)
 
 add_subdirectory(src/cpp)
+
+file(COPY src/configs DESTINATION ${CMAKE_BINARY_DIR})

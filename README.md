@@ -1,4 +1,4 @@
-# Tweetoscope
+# Tweetoscope :bird:
 
 ## Table of contents
 * [General info](#general-info)
@@ -13,6 +13,7 @@ This project is created using :
 * [gaml](https://github.com/HerveFrezza-Buet/gaml)
 * [cppkafka](https://github.com/mfontanini/cppkafka)
 * [kafka](https://kafka.apache.org/)
+* [spdlog](https://github.com/gabime/spdlog/tree/master)
 * and more ...
 
 Check the docker file for more info about the different libraries.

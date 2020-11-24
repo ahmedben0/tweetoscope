@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 ## install packages
 RUN apt-get update && apt-get install -y build-essential pkg-config python-dev python-six cython python-numpy coinor-libipopt1v5 coinor-libipopt-dev \
-    git cmake librdkafka-dev doxygen libboost-all-dev libssl-dev libffi-dev libpthread-stubs0-dev software-properties-common
+    git cmake librdkafka-dev doxygen libboost-all-dev libssl-dev libffi-dev libpthread-stubs0-dev software-properties-common libspdlog-dev
 
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 

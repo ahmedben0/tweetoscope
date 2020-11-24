@@ -21,7 +21,15 @@
 #include "tweet-Processor.cpp"
 #include "tweet-Cascade.cpp"
 
+#include <spdlog/spdlog.h>
+
 int main(int argc, char* argv[]) {
+
+  // disable logs
+  //spdlog::set_level(spdlog::level::off);
+
+  // debug mode
+  //spdlog::set_level(spdlog::level::debug);
 
 
   if(argc != 2) {
@@ -67,6 +75,7 @@ int main(int argc, char* argv[]) {
       auto istr = std::istringstream(std::string(msg.get_payload()));
       istr >> twt;
 
+      spdlog::debug("[{}] new tweet received : key : {} - value : {}", params.topic.in, key, istr.str());
       // we use the maps to handle the processors
       processors += {twt.source, key, twt};
       consumer.commit(msg);

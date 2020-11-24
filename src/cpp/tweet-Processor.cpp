@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tweet-Processor.hpp"
+#include <spdlog/spdlog.h>
 
 namespace tweetoscope {
 
@@ -53,10 +54,17 @@ namespace tweetoscope {
               // send the kafka : topic = cascade_series
               ///std::cout << "[cascade_series] Key = None  Values = " <<  msg_cascade_series(*sp_r, obs) << std::endl;
               // to send the topic the size of the cascade should be higher than min_cascade_size
-              if (sp_r->twts.size() > this->params_.cascade.min_cascade_size) send_kafka_msg(sp_r, *this, obs, 's');
+              if (sp_r->twts.size() > this->params_.cascade.min_cascade_size) {
+                send_kafka_msg(sp_r, *this, obs, 's');
+                spdlog::info("[KAFKA] message sent : topic = {} - msg = {}", this->params_.topic.out_series, msg_cascade_series(*sp_r, obs));
+              }
+              spdlog::debug("[PARTIAL CASCADDE] pop cascade : key = {}", sp_r->key);
               cascades.pop();
             } else break;
-          } else cascades.pop();
+          } else {
+            spdlog::debug("[PARTIAL CASCADDE] pop cascade : weak pointer");
+            cascades.pop();
+          }
         }
         // new created cascade, so it should added to all the partial cascades
         if(is_symbol_created) cascades.push(c_ptr);
@@ -74,12 +82,19 @@ namespace tweetoscope {
           ///std::cout << "[cascade_properties] Key = " << obs << "  Values = " << msg_cascade_properties(*r) << std::endl;
           // loop over all the observation
           // to send the topic the size of the cascade should be higher than min_cascade_size
-          if (r->twts.size() > this->params_.cascade.min_cascade_size) send_kafka_msg(r, *this, obs, 'p');
+          if (r->twts.size() > this->params_.cascade.min_cascade_size) {
+            send_kafka_msg(r, *this, obs, 'p');
+            spdlog::info("[KAFKA] message sent : topic = {} - msg = {}", this->params_.topic.out_properties, msg_cascade_properties(*r));
+          }
         }
+        spdlog::debug("[PRIORITY QUEUE] pop cascade from queue");
         ptr_p->second.queue.pop();
       }
 
-      if (is_symbol_created) c_ptr->location = ptr_p->second.queue.push(c_ptr);
+      if (is_symbol_created) {
+        spdlog::debug("[CASCADDE] new cascade created : key = {} && push to [PRIORITY QUEUE]", std::get<1>(processor));
+        c_ptr->location = ptr_p->second.queue.push(c_ptr);
+      }
 
       ////////////////
       /// update queue
@@ -89,6 +104,8 @@ namespace tweetoscope {
         if (!is_symbol_created) sp->twts.push_back(std::get<2>(processor)); // push the tweets to the cascade
         ptr_p->second.queue.update(sp->location);
       }
+    } else {
+      spdlog::info("[PROCESSOR] new processor created : source = {}", std::get<0>(processor));
     }
   }
 
