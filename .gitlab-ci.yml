@@ -40,7 +40,6 @@ build:
 
 
 test:
-    image: $Dockerhub_username/$Docker_image_name:latest
     stage: test
     tags:
         - docker
