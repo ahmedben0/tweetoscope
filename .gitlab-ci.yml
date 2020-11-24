@@ -42,7 +42,7 @@ build:
 test:
     stage: test
     tags:
-        - docker
+        - shell
     script:
         - g++ -o src/cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread src/cpp/tweet-generator.cpp
         - g++ -o src/cpp/tweet-collector -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml spdlog cppkafka rdkafka` -lpthread src/cpp/tweet-collector.cpp
