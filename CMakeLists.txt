@@ -9,9 +9,9 @@ pkg_check_modules(GAML      REQUIRED gaml)
 pkg_check_modules(CPPKAFKA  REQUIRED cppkafka)
 pkg_check_modules(RDKAFKA   REQUIRED rdkafka)
 
-include_directories(include)
 find_package(spdlog  REQUIRED)
-#pkg_check_modules(SPDLOG    REQUIRED spdlog)
+pkg_check_modules(SPDLOG    REQUIRED spdlog)
+pkg_search_module(SPDLOG    REQUIRED spdlog)
 
 link_libraries(${CPPKAFKA_LIBRARIES} pthread)
 link_libraries(${RDKAFKA_LIBRARIES} pthread)
