@@ -10,7 +10,8 @@ pkg_check_modules(CPPKAFKA  REQUIRED cppkafka)
 pkg_check_modules(RDKAFKA   REQUIRED rdkafka)
 
 include_directories(${CMAKE_SOURCE_DIR}/libs)
-pkg_check_modules(SPDLOG    REQUIRED spdlog)
+# pkg_check_modules(SPDLOG    REQUIRED spdlog)
+find_package(spdlog REQUIRED)
 
 link_libraries(${CPPKAFKA_LIBRARIES} pthread)
 link_libraries(${RDKAFKA_LIBRARIES} pthread)
