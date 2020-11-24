@@ -9,7 +9,7 @@ pkg_check_modules(GAML      REQUIRED gaml)
 pkg_check_modules(CPPKAFKA  REQUIRED cppkafka)
 pkg_check_modules(RDKAFKA   REQUIRED rdkafka)
 
-find_package(spdlog  REQUIRED)
+#find_package(spdlog  REQUIRED)
 pkg_check_modules(SPDLOG    REQUIRED spdlog)
 pkg_search_module(SPDLOG    REQUIRED spdlog)
 
