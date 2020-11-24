@@ -113,9 +113,6 @@ namespace tweetoscope {
       builder_c.payload(msg);
       producer_c.produce(builder_c);
     }
-
-    // Flush the produced message
-    producer_c.flush();
   }
 
 }
