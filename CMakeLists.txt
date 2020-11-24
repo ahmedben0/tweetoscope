@@ -16,6 +16,7 @@ pkg_search_module(SPDLOG    REQUIRED spdlog)
 link_libraries(${CPPKAFKA_LIBRARIES} pthread)
 link_libraries(${RDKAFKA_LIBRARIES} pthread)
 link_libraries(${GAML_LIBRARIES} pthread)
+link_libraries(${SPDLOG_LIBRARIES} pthread)
 
 
 find_package(Boost COMPONENTS filesystem REQUIRED)
