@@ -1,7 +1,9 @@
+it is recommended to use cmake !
+
 TO COMPILE THE .cpp FILES:
 	you should be in the src directory and then run : (for example)
-	
-src$	g++ -o cpp/tweet-generator -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml cppkafka rdkafka` -lpthread cpp/tweet-generator.cpp
+
+src$	g++ -o cpp/tweet-generator.o -O3 -Wall -std=c++17 `pkg-config --libs --cflags gaml spdlog cppkafka rdkafka` -lpthread cpp/tweet-generator.cpp
 
 
 THE FILES NEEDED AS CONFIG FILES FOR THE EXECUTABLES ARE IN THE DIRECTORY : configs
