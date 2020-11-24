@@ -9,3 +9,5 @@ __pycache__/
 tweet-collector.dSYM/
 
 *.o
+
+builds/
