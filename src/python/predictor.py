@@ -33,7 +33,7 @@ producer_stat = KafkaProducer(**producerProperties)
 #here, we create a dictionanry with the cascade id and observation time as key, and the parameters we need as values (params, n_true, n_obs)
 #In fact, we have two types of messages in cascade_properties : size, parameters. We collect the values that interest us in both
 cascades = {}
- 
+
 for message in consumer_cascadeProperties:
     key, value = msg_deserializer(message)
     dict_key = (value['cid'], key) #we identify each cascade by its id and the key(observation window)
@@ -53,9 +53,9 @@ for message in consumer_cascadeProperties:
         cid = key[0] #cascade id
         T_obs = key[1] #observation window size
 
-
-        for message in consumer_models:
-            key, value = msg_deserializer(message)
+        model = None
+        for message2 in consumer_models:
+            key, value = msg_deserializer(message2)
             if key==T_obs:
                 model = value
                 break
