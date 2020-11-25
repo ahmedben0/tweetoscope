@@ -29,10 +29,16 @@ namespace tweetoscope {
     // parameters from the config file
     params::collector params_;
 
-    ProcessorsHandler() = default;
-    ProcessorsHandler(const std::string& config_filename) {
-      params_ = params::collector(config_filename);
-    };
+    cppkafka::Producer  producer_c;
+
+
+    ProcessorsHandler() = delete;
+    ProcessorsHandler(const std::string& config_filename) : producer_c({
+      {"metadata.broker.list", params::collector(config_filename).kafka.brokers},
+      {"log.connection.close", false }
+      })  {
+        params_ = params::collector(config_filename);
+      };
 
     virtual ~ProcessorsHandler() {};
 

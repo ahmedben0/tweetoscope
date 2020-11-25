@@ -40,10 +40,10 @@ namespace tweetoscope {
     // Key = None Value = { 'type' : 'serie', 'cid': 'tw23981', 'msg' : 'blah blah', 'T_obs': 600, 'tweets': [ (t1, mag1), (t2,mag2), ... ] }
     std::ostringstream os;
 
-    os << "{\"type\" : "  << "\"serie\""  << " , "
+    os << "{\"type\" : " << "\"serie\""  << " , "
        << "\"cid\": "    << c.key        << " , "
-       << "\"msg\" : \""    << c.msg        << "\" , "
-       << "\"T_obs\" : "  << obs          << " , "  // to be changed : T_obs = obs (600, 1200 ... )
+       << "\"msg\" : \"" << c.msg        << "\" , "
+       << "\"T_obs\" : " << obs          << " , "  // to be changed : T_obs = obs (600, 1200 ... )
        << "\"tweets\" : [";
     // the information related to the retweets are stored
     // in a list of dictionnary
@@ -78,18 +78,12 @@ namespace tweetoscope {
   }
 
 
-  void send_kafka_msg(ref c_ptr, const ProcessorsHandler& pr, cascade::idf obs, char c_type) {
+  void send_kafka_msg(ref c_ptr, ProcessorsHandler& pr, cascade::idf obs, char c_type) {
     // c_type will allow us to determin if we will send the message
     // on the cascade_series or the cascade_properties
     // possible values : 's', 'p'
 
-    // kafka producer !
-    cppkafka::Configuration config_c {
-      {"metadata.broker.list", pr.params_.kafka.brokers},
-      {"log.connection.close", false }
-    };
 
-    cppkafka::Producer  producer_c(config_c);
 
     if (c_type == 's') {
       cppkafka::MessageBuilder builder_c {pr.params_.topic.out_series};
@@ -100,7 +94,7 @@ namespace tweetoscope {
       ostr.str(msg_cascade_series(*c_ptr, obs));
       auto msg = ostr.str();
       builder_c.payload(msg);
-      producer_c.produce(builder_c);
+      pr.producer_c.produce(builder_c);
     }
 
     if (c_type == 'p') {
@@ -112,8 +106,10 @@ namespace tweetoscope {
       ostr.str(msg_cascade_properties(*c_ptr));
       auto msg = ostr.str();
       builder_c.payload(msg);
-      producer_c.produce(builder_c);
+      pr.producer_c.produce(builder_c);
     }
+
+
   }
 
 }

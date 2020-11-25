@@ -74,6 +74,6 @@ namespace tweetoscope {
   std::string msg_cascade_series(const Cascade& c, cascade::idf obs);
   std::string msg_cascade_properties(const Cascade& c);
 
-  void send_kafka_msg(ref c_ptr, const ProcessorsHandler& pr, cascade::idf obs, char c_type);
+  void send_kafka_msg(ref c_ptr, ProcessorsHandler& pr, cascade::idf obs, char c_type);
 
 }
