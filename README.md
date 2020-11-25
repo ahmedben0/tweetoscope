@@ -30,3 +30,4 @@ $ cd build
 $ cmake ..
 $ make
 ```
+We should also copy the csv data to the folder build/src
