@@ -178,7 +178,10 @@ def compute_MAP(history, alpha=alpha, mu=mu,
 #     history_at_t = history[history[:, 0] <= t]
     
 #     n = len(history_at_t)
+<<<<<<< HEAD
     
+=======
+>>>>>>> 34309cc0e77002abf8bb78f573ac607c691ac054
 #     G1=0
 #     for t_i, m_i in history_at_t:
 #         G1 += m_i*(np.exp(-beta*(t-t_i)))

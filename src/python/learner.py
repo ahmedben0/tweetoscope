@@ -1,7 +1,10 @@
+## This is the learner part.
+## The ;earner is a random forest, for each observation window
+## inputs : params (p, beta, G1), target: n_tot(size of the cascade)
+
 from utils import *
 from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
-
 
 ## Create consumer
 consumerProperties = { "bootstrap_servers":['localhost:9092'],
