@@ -1,5 +1,4 @@
 ## python version of the cascade consumer
-
 import json
 from json import loads
 from kafka import KafkaConsumer

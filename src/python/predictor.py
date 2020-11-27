@@ -1,6 +1,5 @@
 ## This is the predictor part. We use a random forest model
 
-
 from utils import *
 
 
@@ -23,7 +22,6 @@ producer_sample = KafkaProducer(**producerProperties)
 producer_alert = KafkaProducer(**producerProperties)
 producer_stat = KafkaProducer(**producerProperties)
 
-
 ##create a dict associating each model in models to the right observation window (we train a model for each observation window designated by the key)
 # models = {}
 # for message in consumer_models:
@@ -44,21 +42,22 @@ for message in consumer_cascadeProperties:
     if value['type'] == 'parameters':
         cascades[dict_key]['n_obs'] = value['n_obs']
         cascades[dict_key]['params'] = value['params'] #p, beta, G1
+        cascades[dict_key]['msg'] = value['msg']
 
 
-    wanted_keys = ['n_true', 'n_obs', 'params']
-    if any(elem in wanted_keys  for elem in cascades[dict_key].keys()):
+    wanted_keys = ['n_true', 'n_obs', 'params', 'msg']
+    if all(elem in cascades[dict_key].keys()  for elem in wanted_keys):
         key, value = dict_key, cascades[dict_key]
 
         cid = key[0] #cascade id
         T_obs = key[1] #observation window size
 
         model = None
-        for message2 in consumer_models:
-            key, value = msg_deserializer(message2)
-            if key==T_obs:
-                model = value
-                break
+        # for message2 in consumer_models:
+        #     key, value = msg_deserializer(message2)
+        #     if key==T_obs:
+        #         model = value
+        #         break
 
 
 
@@ -72,19 +71,25 @@ for message in consumer_cascadeProperties:
         #inputs: params, target: omega
         valeurs_sample =  {'type': 'sample', 'cid': cid, 'X' : X, 'W': W}
         producer_sample.send("samples", value=msg_serializer(valeurs_sample), key=msg_serializer(T_obs))
-
+        print(valeurs_sample)
 
         #We compute the ARE (messages of type stat)
-        w_obs = model.predict(X) #predict the w_obs for the obs window
+        if model is None:
+            w_obs =1
+        else: 
+            w_obs = model.predict(X) #predict the w_obs for the obs window
         n_pred = estimated_size(n_obs, X, w_obs=w_obs)
         are = compute_are(n_pred, n_true)
         valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
         producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
-
+        print(valeurs_stat)
 
         #we compute the alert message
-        #TO DO
-
+        if n_pred>=100:
+            valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
+            producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
+            print(valeurs_alert)
+        
 
 
 
@@ -125,3 +130,4 @@ for message in consumer_cascadeProperties:
 
 #     #we compute the alert message
 #     #TO DO
+

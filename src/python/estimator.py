@@ -32,7 +32,6 @@ for message in consumer:
    ## value['list_retweets'] is a list of dictionnaries => dict_keys(['time', 'magnitude', 'info'])
    key, value = msg_deserializer(message)
    cascade = np.array(value['tweets'])
-
    #estimate parameters p, beta
    estimated_params = compute_MAP(cascade)[1].tolist()
 
