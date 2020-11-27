@@ -19,7 +19,6 @@ producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer_models = KafkaProducer(**producerProperties)
 
-
 #create dataset
 X_samples = pd.DataFrame(columns=['T_obs', 'p', 'beta', 'G1', 'W'])
 
@@ -50,5 +49,6 @@ for message in consumer_samples:
             model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
             model.fit(features, target)
             producer_models.send("models", value=msg_serializer(str(t_obs)+' '+str(test)), key=msg_serializer(t_obs), partition=obs.index(t_obs))
+            print("message sent")
             test+=1
             counter=0
