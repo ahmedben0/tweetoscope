@@ -23,14 +23,9 @@ consumer_models.subscribe("models")
 producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer_sample = KafkaProducer(**producerProperties)
-producer_alert = KafkaProducer(**producerProperties)
-producer_stat = KafkaProducer(**producerProperties)
+producer_alert  = KafkaProducer(**producerProperties)
+producer_stat   = KafkaProducer(**producerProperties)
 
-##create a dict associating each model in models to the right observation window (we train a model for each observation window designated by the key)
-# models = {}
-# for message in consumer_models:
-#     key, value = msg_deserializer(message)
-#     models[key] = value
 
 #here, we create a dictionanry with the cascade id and observation time as key, and the parameters we need as values (params, n_true, n_obs)
 #In fact, we have two types of messages in cascade_properties : size, parameters. We collect the values that interest us in both
@@ -57,12 +52,6 @@ for message in consumer_cascadeProperties:
         T_obs = key[1] #observation window size
 
         model = None
-        # consumer_models.assign([TopicPartition('models', obs.index(T_obs))])
-        # for mod in consumer_models:
-        #     k, latest_model = msg_deserializer(message)
-        #     print(latest_model)
-        #     break
-
 
         X = value['params'] #p, beta, G1
         n_true = value['n_true']
@@ -93,5 +82,4 @@ for message in consumer_cascadeProperties:
             producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
             print(valeurs_alert)
         
-
 
