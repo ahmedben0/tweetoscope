@@ -30,8 +30,8 @@ consumer_cascadeProperties.subscribe("cascade_properties")
 producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer_sample = KafkaProducer(**producerProperties)
-producer_alert = KafkaProducer(**producerProperties)
-producer_stat = KafkaProducer(**producerProperties)
+producer_alert  = KafkaProducer(**producerProperties)
+producer_stat   = KafkaProducer(**producerProperties)
 
 # class model for prediction
 class model_consumer:
@@ -129,5 +129,4 @@ for message in consumer_cascadeProperties:
             producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
             print(valeurs_alert)
         
-
 
