@@ -26,7 +26,7 @@ producer_models = KafkaProducer(**producerProperties)
 X_samples = pd.DataFrame(columns=['T_obs', 'p', 'beta', 'G1', 'W'])
 
 features_columns = ['p', 'beta', 'G1']
-target_columns = ['W']
+target_columns   = ['W']
 
 
 counter = 0 #to determine after how many samples we train models.
@@ -47,7 +47,7 @@ for message in consumer_samples:
 
             X_Tobs = X_samples[X_samples['T_obs']==t_obs] #we extract the samples corresponding to t_obs observation window size
             features = X_Tobs[features_columns]
-            target = X_Tobs[target_columns]
+            target = X_Tobs[target_columns].values.ravel()
             model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
             model.fit(features, target)
 
