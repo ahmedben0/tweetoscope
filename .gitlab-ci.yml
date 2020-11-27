@@ -1,17 +1,12 @@
-before_script:
-    - export PATH=$PATH:/usr/local/bin:/usr/include/:/usr/bin/
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/share/pkgconfig/:/usr/lib/pkgconfig/
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig/:/usr/local/lib/:/usr/local/include/
-
-
 stages:
+    - build_docker
     - build
     - test
 
 
 build_docker:
     image: docker:latest
-    stage: build
+    stage: build_docker
     services:
         - docker:dind
     before_script:
