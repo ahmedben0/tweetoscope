@@ -36,9 +36,10 @@ consumer_cascadeProperties.subscribe("cascade_properties")
 
 ## Create producers
 producerProperties = {"bootstrap_servers":['localhost:9092']}
-producer_sample = KafkaProducer(**producerProperties) #for sedning samples to the learner
-producer_alert = KafkaProducer(**producerProperties) #for producing the longest cascades
-producer_stat = KafkaProducer(**producerProperties) #for producing stats about the performance (ARE)
+
+producer_sample = KafkaProducer(**producerProperties)
+producer_alert  = KafkaProducer(**producerProperties)
+producer_stat   = KafkaProducer(**producerProperties)
 
 # class model for prediction
 class model_consumer:
@@ -163,5 +164,4 @@ for message in consumer_cascadeProperties:
         logger.info('ALERT:')
         logger.info(valeurs_alert)
         
-
 
