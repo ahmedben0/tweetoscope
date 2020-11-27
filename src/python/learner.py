@@ -21,8 +21,12 @@ consumer_samples.subscribe("samples")
 producerProperties = {"bootstrap_servers":['localhost:9092']}
 producer_models = KafkaProducer(**producerProperties)
 
+<<<<<<< HEAD
 
 ## Init dataset with features X=[p, beta, G1] and target Wobs
+=======
+#create dataset
+>>>>>>> 7bf1b60 (minor modifications)
 X_samples = pd.DataFrame(columns=['T_obs', 'p', 'beta', 'G1', 'W'])
 
 features_columns = ['p', 'beta', 'G1']
