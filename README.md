@@ -7,6 +7,7 @@
 
 ## General info :book:
 This project was developed by Mohammed Fellaji, Elie Mokbel and Ahmed Ben Aissa from Ecole CentraleSupélec. 
+
 Information about the project could be found in the official website :link: : [Tweetoscope](http://sdi.metz.centralesupelec.fr/spip.php?article25)
 
 ## Technologies :computer:
