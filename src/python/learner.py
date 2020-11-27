@@ -19,7 +19,6 @@ producerProperties = {"bootstrap_servers":['localhost:9092']}
 
 producer_models = KafkaProducer(**producerProperties)
 
-
 #create dataset
 X_samples = pd.DataFrame(columns=['T_obs', 'p', 'beta', 'G1', 'W'])
 
