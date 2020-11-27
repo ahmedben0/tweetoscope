@@ -1,13 +1,11 @@
 FROM ubuntu:18.04
 
+COPY docker/requirements.txt /usr/
+
 ## install packages
-RUN apt-get update && apt-get install -y build-essential pkg-config python-dev python-six cython python-numpy coinor-libipopt1v5 coinor-libipopt-dev \
-    git cmake librdkafka-dev doxygen libboost-all-dev libssl-dev libffi-dev libpthread-stubs0-dev software-properties-common vim
+RUN apt-get update && cat /usr/requirements.txt | xargs apt-get install -y
 
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
-
-RUN apt-get update && apt-get install -y gcc-7 g++-7 g++
-
 
 ## cppkafka
 RUN git clone https://github.com/mfontanini/cppkafka.git cppkafka \
@@ -47,13 +45,6 @@ RUN apt-get update && \
 # Setup JAVA_HOME -- useful for docker commandline
 RUN export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
 RUN export PATH="$PATH:$JAVA_HOME"
-
-
-## zookeeper
-RUN apt-get update && \
-    apt-get install -y zookeeperd && \
-    apt-get install -y wget && \
-    apt-get install -y systemd
 
 
 ## KAFKA
