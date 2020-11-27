@@ -11,3 +11,7 @@ max_n_star = 1 #maximum authorized value of the branching factor (defines the up
 ##Random forests
 max_depth = 2
 random_state = 0
+
+
+#observation windows
+obs = [600, 1200, 1800]
