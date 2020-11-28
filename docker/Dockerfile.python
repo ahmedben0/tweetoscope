@@ -2,6 +2,6 @@ FROM frolvlad/alpine-python-machinelearning
 
 COPY docker/requirements_python.txt /
 
-COPY ../src/python /tweetoscope/src/python
+COPY src/python /tweetoscope/src/python
 
 WORKDIR /tweetoscope/src/python
