@@ -27,7 +27,8 @@ if the dockerfiles are changed, one should change the variable name : Docker_ima
 
 
 ## Setup :wrench:
-To run this project, one should follow these steps :
+To run this project, one should follow these steps
+
 
 ### Requirements
 
