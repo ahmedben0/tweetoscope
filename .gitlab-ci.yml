@@ -8,9 +8,7 @@ stages:
 
 
 compile_cpp:
-    image: 
-        name: $Dockerhub_username/tweeto-main-docker:latest
-        pull_policy: always
+    image: $Dockerhub_username/$Main_Docker_Image:latest
     stage: build
     tags:
         - docker
@@ -135,7 +133,7 @@ build_monitor_docker_image:
 ################################################
 
 test:
-    image: $Dockerhub_username/tweeto-main-docker:latest
+    image: $Dockerhub_username/$Main_Docker_Image:latest
     stage: test
     tags:
         - docker
