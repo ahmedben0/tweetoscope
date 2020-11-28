@@ -1,13 +1,11 @@
 FROM ubuntu:18.04
 
+COPY docker/requirements_apt.txt /usr/
+
 ## install packages
-RUN apt-get update && apt-get install -y build-essential pkg-config python-dev python-six cython python-numpy coinor-libipopt1v5 coinor-libipopt-dev \
-    git cmake librdkafka-dev doxygen libboost-all-dev libssl-dev libffi-dev libpthread-stubs0-dev software-properties-common vim
+RUN apt-get update && cat /usr/requirements_apt.txt | xargs apt-get install -y
 
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
-
-RUN apt-get update && apt-get install -y gcc-7 g++-7 g++
-
 
 ## cppkafka
 RUN git clone https://github.com/mfontanini/cppkafka.git cppkafka \
@@ -32,32 +30,5 @@ RUN git clone https://github.com/gabime/spdlog.git \
     && cd spdlog && mkdir build && cd build \
     && cmake .. && make -j && make install
 
-## OpenJDK-11
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
-    apt-get install -y ant && \
-    apt-get clean
 
-# Fix certificate issues
-RUN apt-get update && \
-    apt-get install ca-certificates-java && \
-    apt-get clean && \
-    update-ca-certificates -f
-
-# Setup JAVA_HOME -- useful for docker commandline
-RUN export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
-RUN export PATH="$PATH:$JAVA_HOME"
-
-
-## zookeeper
-RUN apt-get update && \
-    apt-get install -y zookeeperd && \
-    apt-get install -y wget && \
-    apt-get install -y systemd
-
-
-## KAFKA
-RUN wget https://downloads.apache.org/kafka/2.6.0/kafka_2.13-2.6.0.tgz && \
-    tar xvzf kafka_2.13-2.6.0.tgz && \
-    rm -r kafka_2.13-2.6.0.tgz
-RUN export KAFKA_HOME=kafka_2.13-2.6.0
+COPY src/data /tweetoscope/data
