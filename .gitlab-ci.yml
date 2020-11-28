@@ -4,24 +4,42 @@ stages:
     - test
 
 
-build_docker:
+### 1st stage : build the main docker images 
+
+build_main_docker:
     image: docker:latest
     stage: build_docker
     services:
-        - docker:dind
-    before_script:
-        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker:dind        
     script:
         - apk update && apk add git
-        - docker build -f docker/Dockerfile.main -t $Dockerhub_username/$Docker_image_name:latest .
-        - docker push $Dockerhub_username/$Docker_image_name:latest
+        - docker build -f docker/Dockerfile.main -t $Dockerhub_username/tweeto-main-docker:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-main-docker:latest
     rules:
         - changes:
             - docker/Dockerfile.main
 
+ 
+build_python_docker:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind
+    script:
+        - apk update && apk add git
+        - docker build -f docker/Dockerfile.python -t $Dockerhub_username/tweeto-python-docker:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-python-docker:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.python
 
-build:
-    image: $Dockerhub_username/$Docker_image_name:latest
+
+### 2nd stage : build the docker images
+
+build_binary:
+    image: $Dockerhub_username/tweeto-main-docker:latest
     stage: build
     tags:
         - docker
@@ -30,10 +48,16 @@ build:
         - cd build
         - cmake ..
         - make
+    artifacts:
+        paths:
+            - build/src/cpp/tweet-collector.o
+            - build/src/cpp/tweet-generator.o
+
+
 
 
 test:
-    image: $Dockerhub_username/$Docker_image_name:latest
+    image: $Dockerhub_username/tweeto-main-docker:latest
     stage: test
     tags:
         - docker
