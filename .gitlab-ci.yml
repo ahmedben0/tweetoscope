@@ -8,7 +8,7 @@ stages:
 
 
 compile_cpp:
-    image: $Dockerhub_username/$Main_Docker_Image:latest
+    image: $Dockerhub_username/tweeto-main-docker:latest
     stage: build
     tags:
         - docker
@@ -133,7 +133,7 @@ build_monitor_docker_image:
 ################################################
 
 test:
-    image: $Dockerhub_username/$Main_Docker_Image:latest
+    image: $Dockerhub_username/tweeto-main-docker:latest
     stage: test
     tags:
         - docker
