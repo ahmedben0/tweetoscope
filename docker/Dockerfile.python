@@ -1,7 +1,5 @@
 FROM frolvlad/alpine-python-machinelearning
 
-RUN apk update && apk add vim
-
 COPY docker/requirements_python.txt /
 
 COPY ../src/python /tweetoscope/src/python
