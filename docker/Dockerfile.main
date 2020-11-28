@@ -1,9 +1,9 @@
 FROM ubuntu:18.04
 
-COPY docker/requirements.txt /usr/
+COPY docker/requirements_apt.txt /usr/
 
 ## install packages
-RUN apt-get update && cat /usr/requirements.txt | xargs apt-get install -y
+RUN apt-get update && cat /usr/requirements_apt.txt | xargs apt-get install -y
 
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
