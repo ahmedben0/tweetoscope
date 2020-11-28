@@ -1,0 +1,7 @@
+FROM fellajimed/tweeto-main-docker:latest
+
+COPY build/ /tweetoscope/
+
+WORKDIR /tweetoscope/build/src
+
+CMD ./cpp/tweet-generator.o ./configs/params.config
