@@ -1,44 +1,13 @@
 stages:
-    - build_docker
     - build
+    - build_docker
     - test
 
 
-### 1st stage : build the main docker images 
-
-build_main_docker:
-    image: docker:latest
-    stage: build_docker
-    services:
-        - docker:dind        
-    script:
-        - apk update && apk add git
-        - docker build -f docker/Dockerfile.main -t $Dockerhub_username/tweeto-main-docker:latest .
-        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-main-docker:latest
-    rules:
-        - changes:
-            - docker/Dockerfile.main
-
- 
-build_python_docker:
-    image: docker:latest
-    stage: build_docker
-    services:
-        - docker:dind
-    script:
-        - apk update && apk add git
-        - docker build -f docker/Dockerfile.python -t $Dockerhub_username/tweeto-python-docker:latest .
-        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-python-docker:latest
-    rules:
-        - changes:
-            - docker/Dockerfile.python
+################################################
 
 
-### 2nd stage : build the docker images
-
-build_binary:
+compile_cpp:
     image: $Dockerhub_username/tweeto-main-docker:latest
     stage: build
     tags:
@@ -50,11 +19,118 @@ build_binary:
         - make
     artifacts:
         paths:
-            - build/src/cpp/tweet-collector.o
-            - build/src/cpp/tweet-generator.o
+            - build/
 
 
+################################################
 
+
+build_collector_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweeto-collector:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-collector:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.collector
+            - src/cpp/*
+
+
+build_generator_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweeto-generator:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-generator:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.generator
+            - src/cpp/*
+
+
+build_estimator_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.estimator -t $Dockerhub_username/tweeto-estimator:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-estimator:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.estimator
+            - src/python/*
+
+
+build_predictor_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.predictor -t $Dockerhub_username/tweeto-predictor:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-predictor:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.predictor
+            - src/python/*
+
+
+build_learner_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.learner -t $Dockerhub_username/tweeto-learner:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-learner:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.learner
+            - src/python/*
+
+
+build_dashboard_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.dashboard -t $Dockerhub_username/tweeto-dashboard:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-dashboard:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.dashboard
+            - src/python/*
+
+
+build_monitor_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.monitor -t $Dockerhub_username/tweeto-monitor:latest .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweeto-monitor:latest
+    rules:
+        - changes:
+            - docker/Dockerfile.monitor
+            - src/python/*
+
+
+################################################
 
 test:
     image: $Dockerhub_username/tweeto-main-docker:latest
