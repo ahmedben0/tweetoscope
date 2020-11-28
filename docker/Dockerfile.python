@@ -6,4 +6,4 @@ COPY docker/requirements_python.txt /
 
 COPY ../src/python /tweetoscope/src/python
 
-WORKDIR /tweetoscope
+WORKDIR /tweetoscope/src/python
