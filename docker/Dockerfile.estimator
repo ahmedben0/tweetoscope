@@ -1,0 +1,9 @@
+FROM frolvlad/alpine-python-machinelearning
+
+COPY docker/requirements_python.txt /
+
+COPY src/python /tweetoscope/build/src/
+
+WORKDIR /tweetoscope/src/python
+
+CMD python3 estimator.py
