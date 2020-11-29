@@ -88,8 +88,7 @@ namespace tweetoscope {
     if (c_type == 's') {
       cppkafka::MessageBuilder builder_c {pr.params_.topic.out_series};
 
-      auto key = std::to_string(NULL);
-      builder_c.key(key);
+      // no need to make a null key : having a null value will impact the partitions 
       std::ostringstream ostr;
       ostr.str(msg_cascade_series(*c_ptr, obs));
       auto msg = ostr.str();

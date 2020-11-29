@@ -120,13 +120,13 @@ for message in consumer_cascadeProperties:
         n_pred = estimated_size(n_obs, X, w_obs=w_obs)
         are = compute_are(n_pred, n_true)
         valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
-        producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
+        producer_stat.send("stats", value=msg_serializer(valeurs_stat))    ## key=Nonee : setting the key to None will impact the partitiom of the topic 
         print(valeurs_stat)
 
         #we compute the alert message
         if n_pred>=100:
-            valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
-            producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
+            valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : int(n_pred)}
+            producer_alert.send("alert", value=msg_serializer(valeurs_alert)) ## key=Nonee : setting the key to None will impact the partitiom of the topic 
             print(valeurs_alert)
         
 

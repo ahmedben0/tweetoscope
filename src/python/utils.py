@@ -18,7 +18,10 @@ def msg_deserializer(message) :
     ## the kafka message comming from the cascade topic
     ## message = key, value
 
-    key = loads(message.key.decode('utf-8'))
+    if message.key :
+        key = loads(message.key.decode('utf-8'))
+    else : 
+        key = "None"
     value = ast.literal_eval(message.value.decode("UTF-8"))
     #value = loads(message.value.decode('utf-8').replace('\'', '\"'))
     return (key, value)
