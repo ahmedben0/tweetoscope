@@ -8,7 +8,7 @@ stages:
 
 
 compile_cpp:
-    image: $Dockerhub_username/tweeto-main-docker:latest
+    image: $Dockerhub_username/tweeto-main-docker:v1
     stage: build
     tags:
         - docker
@@ -38,6 +38,7 @@ build_collector_docker_image:
         - changes:
             - docker/Dockerfile.collector
             - src/cpp/*
+            - docker/requirements_apt.txt
 
 
 build_generator_docker_image:
@@ -53,6 +54,7 @@ build_generator_docker_image:
         - changes:
             - docker/Dockerfile.generator
             - src/cpp/*
+            - docker/requirements_apt.txt
 
 
 build_estimator_docker_image:
@@ -68,6 +70,7 @@ build_estimator_docker_image:
         - changes:
             - docker/Dockerfile.estimator
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_predictor_docker_image:
@@ -83,6 +86,7 @@ build_predictor_docker_image:
         - changes:
             - docker/Dockerfile.predictor
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_learner_docker_image:
@@ -98,6 +102,7 @@ build_learner_docker_image:
         - changes:
             - docker/Dockerfile.learner
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_dashboard_docker_image:
@@ -113,6 +118,7 @@ build_dashboard_docker_image:
         - changes:
             - docker/Dockerfile.dashboard
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_monitor_docker_image:
@@ -128,12 +134,13 @@ build_monitor_docker_image:
         - changes:
             - docker/Dockerfile.monitor
             - src/python/*
+            - docker/requirements_python.txt
 
 
 ################################################
 
 test:
-    image: $Dockerhub_username/tweeto-main-docker:latest
+    image: $Dockerhub_username/tweeto-main-docker:v1
     stage: test
     tags:
         - docker

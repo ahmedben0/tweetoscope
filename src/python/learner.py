@@ -49,6 +49,6 @@ for message in consumer_samples:
             model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
             model.fit(features, target)
             producer_models.send("models", value=msg_serializer(str(t_obs)+' '+str(test)), key=msg_serializer(t_obs), partition=obs.index(t_obs))
-            print("message sent")
+            print("message sent :", str(t_obs)+' '+str(test))
             test+=1
             counter=0
