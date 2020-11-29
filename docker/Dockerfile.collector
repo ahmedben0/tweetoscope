@@ -1,4 +1,4 @@
-FROM fellajimed/tweeto-main-docker:v1
+FROM fellajimed/tweeto-main-docker:v2
 
 COPY build/ /tweetoscope/build
 

@@ -8,7 +8,7 @@ stages:
 
 
 compile_cpp:
-    image: $Dockerhub_username/tweeto-main-docker:v1
+    image: $Dockerhub_username/tweeto-main-docker:v2
     stage: build
     tags:
         - docker
@@ -140,7 +140,7 @@ build_monitor_docker_image:
 ################################################
 
 test:
-    image: $Dockerhub_username/tweeto-main-docker:v1
+    image: $Dockerhub_username/tweeto-main-docker:v2
     stage: test
     tags:
         - docker
