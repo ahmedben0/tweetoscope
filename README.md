@@ -34,10 +34,11 @@ The csv files could be found in : [neww-data.csv](https://pennerath.pages.centra
 
 Please put the csv files in the folder data/
 
-### - Requirements
-Most of the libraries used in the projects are in the file docker/requirements.txt. To install them you can lanch the following command :
+### - Libraries
+
+Most of the libraries used in the projects are in the file docker/requirements_apt.txt. To install them you can lanch the following command :
 ```
-$ apt-get update && cat requirements.txt | xargs apt-get install -y
+$ apt-get update && cat requirements_apt.txt | xargs apt-get install -y
 ```
 
 Other packages also should be installed, please refer to [Technologies](#technologies) : gaml, cppkafka, spdlog ..
