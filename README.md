@@ -34,7 +34,7 @@ The csv files could be found in : [neww-data.csv](https://pennerath.pages.centra
 
 Please put the csv files in the folder data/
 
-### - Libraries
+### - Requirements
 
 Most of the libraries used in the projects are in the file docker/requirements_apt.txt. To install them you can lanch the following command :
 ```
