@@ -31,13 +31,32 @@ To run this project, one should follow these steps
 
 
 ### Requirements
-
-Most of the libraries used in the projects are in the file docker/requirements.txt. To install them you can lanch the following command L:
+Most of the libraries used in the projects are in the file docker/requirements.txt. To install them you can lanch the following command :
 ```
-apt-get update && cat requirements.txt | xargs apt-get install -y
+$ apt-get update && cat requirements.txt | xargs apt-get install -y
 ```
 
 Other packages also should be installed, please refer to [Technologies](#technologies) : gaml, cppkafka, spdlog ..
+
+### Kafka 
+To use the .sh file to lanch kafka, you should export the path to kafka. As mentionned in the description of the project, [kafka 2.4.1](https://www.apache.org/dyn/closer.cgi?path=/kafka/2.4.1/kafka-2.4.1-src.tgz) is used
+```
+$ export KAFKA_PATH=/path/to/kafka
+```
+
+To run the kafka server from the kafka folder in this project (the 3 files are in the same folder): 
+```
+$ ./kafka.sh start --zooconfig zookeeper.properties --serverconfig server.properties
+```
+If you have a problem starting the server, it is possible that you should run this from KAFKA_PATH (in our case, the message in the terminal suggested to run this)
+```
+$ ./gradlew jar -PscalaVersion=2.12.10
+```
+
+To stop the server : 
+```
+$ ./kafka stop
+```
 
 ### C++
 It is possible to compile the cpp files using CMAKE :

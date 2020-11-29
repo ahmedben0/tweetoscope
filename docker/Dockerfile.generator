@@ -1,6 +1,6 @@
-FROM fellajimed/tweeto-main-docker:latest
+FROM fellajimed/tweeto-main-docker:v1
 
-COPY build/ /tweetoscope/
+COPY build/ /tweetoscope/build
 
 WORKDIR /tweetoscope/build/src
 
