@@ -29,8 +29,7 @@ if the dockerfiles are changed, one should change the variable name : Docker_ima
 ## Setup :wrench:
 To run this project, one should follow these steps
 
-
-### Requirements
+### Dependencies
 Most of the libraries used in the projects are in the file docker/requirements.txt. To install them you can lanch the following command :
 ```
 $ apt-get update && cat requirements.txt | xargs apt-get install -y
