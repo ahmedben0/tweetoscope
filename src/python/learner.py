@@ -5,9 +5,15 @@
 from utils import *
 from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
+import configparser
 
-## Create consumer
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
+
+
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
 
@@ -15,7 +21,7 @@ consumer_samples = KafkaConsumer(**consumerProperties)
 consumer_samples.subscribe("samples")
 
 #create producer
-producerProperties = {"bootstrap_servers":['localhost:9092']}
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
 
 producer_models = KafkaProducer(**producerProperties)
 
@@ -48,7 +54,8 @@ for message in consumer_samples:
             target = X_Tobs[target_columns].values.ravel()
             model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
             model.fit(features, target)
-            producer_models.send("models", value=msg_serializer(str(t_obs)+' '+str(test)), key=msg_serializer(t_obs), partition=obs.index(t_obs))
+            ### fix partitions !
+            producer_models.send("models", value=msg_serializer(str(t_obs)+' '+str(test)), key=msg_serializer(t_obs)) #, partition=obs.index(t_obs)) !!!! must be changed 
             print("message sent :", str(t_obs)+' '+str(test))
             test+=1
             counter=0

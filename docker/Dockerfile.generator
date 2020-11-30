@@ -1,7 +1,9 @@
-FROM fellajimed/tweeto-main-docker:v2
+FROM fellajimed/tweeto-main-docker:v3
 
 COPY build/ /tweetoscope/build
 
+RUN mv /tweetoscope/data /tweetoscope/build/data
+
 WORKDIR /tweetoscope/build/src
 
-CMD ./cpp/tweet-generator.o ./configs/params.config
+CMD ./cpp/tweet-generator.o ./configs/params-dep.config

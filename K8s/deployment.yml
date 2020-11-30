@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: collector-container
-        image: fellajimed/tweeto-collector:v2
+        image: fellajimed/tweeto-collector:v3
         imagePullPolicy: Always
 ---
 apiVersion: apps/v1
@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
       - name: generator-container
-        image: fellajimed/tweeto-generator:v2
+        image: fellajimed/tweeto-generator:v3
         imagePullPolicy: Always
 ---
 apiVersion: apps/v1

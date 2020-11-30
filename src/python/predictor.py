@@ -1,18 +1,26 @@
 ## This is the predictor part. We use a random forest model
 
 from utils import *
+import configparser
+
+
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
 
 
 ## Create consumers
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
+
 
 consumer_cascadeProperties = KafkaConsumer(**consumerProperties)
 consumer_cascadeProperties.subscribe("cascade_properties")
 
 
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"latest",
                        "group_id":"myOwnPrivatePythonGroup"}
 consumer_models = KafkaConsumer(**consumerProperties)
@@ -20,7 +28,7 @@ consumer_models.subscribe("models")
 
 
 ## Create producers
-producerProperties = {"bootstrap_servers":['localhost:9092']}
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
 
 producer_sample = KafkaProducer(**producerProperties)
 producer_alert  = KafkaProducer(**producerProperties)
