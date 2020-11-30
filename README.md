@@ -4,6 +4,7 @@
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [Deployment](#Deployment)
 
 ## General info :book:
 This project was developed by Mohammed Fellaji, Elie Mokbel and Ahmed Ben Aissa from Ecole CentraleSupélec. 
