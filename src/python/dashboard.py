@@ -14,7 +14,6 @@ def clear():
     # for mac and linux(here, os.name is 'posix') 
     else: 
         _ = system('clear')
-    print(chr(27) + "[2J")
 
 
 def dict_to_str(d) :
