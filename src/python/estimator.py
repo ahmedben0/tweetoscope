@@ -5,6 +5,8 @@
 from utils import *
 
 
+## init logger
+logger = logger.get_logger('Estimator', broker_list='localhost:9092', debug=True)
 
 ## read config file
 config = configparser.ConfigParser(strict=False)
@@ -44,4 +46,4 @@ for message in consumer:
    n_supp = estimated_size(n_obs, estimated_params)
    valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': n_obs, 'n_supp' : n_supp, 'params': estimated_params}
    producer.send(config["topic"]["out_properties"], value=msg_serializer(valeurs), key=msg_serializer(value['T_obs']))
-   print(valeurs)
+   logger.info(valeurs)

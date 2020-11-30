@@ -18,7 +18,7 @@ import scipy.optimize as optim
 from sklearn.ensemble import RandomForestRegressor
 
 from fixed_params import *
-
+import logger
 
 
 ### Serializer and deserializer (for kafka)

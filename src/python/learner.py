@@ -5,6 +5,9 @@
 
 from utils import *
 
+## init logger
+logger = logger.get_logger('Learner', broker_list='localhost:9092', debug=True)
+
 
 ## Create consumer for reading samples sent by predictor node
 consumerProperties = { "bootstrap_servers":['localhost:9092'],
@@ -47,6 +50,11 @@ for message in consumer_samples:
             target = X_Tobs[target_columns]
             model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
             model.fit(features, target)
+
+            logger.info('NEW MODEL:')
+            logger.info('Time window: '+str(t_obs))
+            logger.info('Number of samples: '+str(len(features)))
+
 
             #send trained model to the rpedictor on the corresponding partition for the time window partition
             producer_models.send("models", value=msg_serializer(model, model=True), key=msg_serializer(t_obs), partition=obs.index(t_obs))
