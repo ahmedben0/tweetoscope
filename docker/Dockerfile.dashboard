@@ -1,9 +1,15 @@
-FROM frolvlad/alpine-python-machinelearning
+FROM python:3.7-slim
 
 COPY docker/requirements_python.txt /
 
-COPY src/python /tweetoscope/build/src/
+RUN pip install -r requirements_python.txt
 
-WORKDIR /tweetoscope/src/python
+COPY src/configs /tweetoscope/build/src/configs
 
-CMD python3 dashboard.py
+COPY src/python /tweetoscope/build/src/python
+
+WORKDIR /tweetoscope/build/src
+
+RUN rm configs/collector.ini && mv configs/collector-dep.ini configs/collector.ini
+
+CMD python3 python/dashboard.py

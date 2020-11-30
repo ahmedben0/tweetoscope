@@ -5,9 +5,15 @@
 from utils import *
 from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
+import configparser
 
-## Create consumer
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
+
+
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
 
@@ -15,7 +21,7 @@ consumer_samples = KafkaConsumer(**consumerProperties)
 consumer_samples.subscribe("samples")
 
 #create producer
-producerProperties = {"bootstrap_servers":['localhost:9092']}
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
 
 producer_models = KafkaProducer(**producerProperties)
 

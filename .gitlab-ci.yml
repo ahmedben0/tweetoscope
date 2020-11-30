@@ -8,7 +8,7 @@ stages:
 
 
 compile_cpp:
-    image: $Dockerhub_username/tweeto-main-docker:v1
+    image: $Dockerhub_username/tweeto-main-docker:v3
     stage: build
     tags:
         - docker
@@ -31,9 +31,9 @@ build_collector_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweeto-collector:latest .
+        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweeto-collector:v3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-collector:latest
+        - docker push $Dockerhub_username/tweeto-collector:v3
     rules:
         - changes:
             - docker/Dockerfile.collector
@@ -47,9 +47,9 @@ build_generator_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweeto-generator:latest .
+        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweeto-generator:v3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-generator:latest
+        - docker push $Dockerhub_username/tweeto-generator:v3
     rules:
         - changes:
             - docker/Dockerfile.generator
@@ -140,7 +140,7 @@ build_monitor_docker_image:
 ################################################
 
 test:
-    image: $Dockerhub_username/tweeto-main-docker:v1
+    image: $Dockerhub_username/tweeto-main-docker:v2
     stage: test
     tags:
         - docker

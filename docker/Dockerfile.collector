@@ -1,7 +1,7 @@
-FROM fellajimed/tweeto-main-docker:v1
+FROM fellajimed/tweeto-main-docker:v3
 
 COPY build/ /tweetoscope/build
 
 WORKDIR /tweetoscope/build/src
 
-CMD ./cpp/tweet-collector.o ./configs/collector.ini
+CMD ./cpp/tweet-collector.o ./configs/collector-dep.ini

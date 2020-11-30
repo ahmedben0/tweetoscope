@@ -4,6 +4,7 @@
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [Deployment](#Deployment)
 
 ## General info :book:
 This project was developed by Mohammed Fellaji, Elie Mokbel and Ahmed Ben Aissa from Ecole CentraleSupélec. 
@@ -29,16 +30,21 @@ if the dockerfiles are changed, one should change the variable name : Docker_ima
 ## Setup :wrench:
 To run this project, one should follow these steps
 
+### - Data :file_folder:
+The csv files could be found in : [neww-data.csv](https://pennerath.pages.centralesupelec.fr/tweetoscope/data/news-data.csv) and [news-index.csv](https://pennerath.pages.centralesupelec.fr/tweetoscope/data/news-index.csv) 
 
-### Requirements
-Most of the libraries used in the projects are in the file docker/requirements.txt. To install them you can lanch the following command :
+Please put the csv files in the folder data/
+
+### - Requirements :package:
+
+Most of the libraries used in the projects are in the file docker/requirements_apt.txt. To install them you can lanch the following command :
 ```
-$ apt-get update && cat requirements.txt | xargs apt-get install -y
+$ apt-get update && cat requirements_apt.txt | xargs apt-get install -y
 ```
 
 Other packages also should be installed, please refer to [Technologies](#technologies) : gaml, cppkafka, spdlog ..
 
-### Kafka 
+### - Kafka 
 To use the .sh file to lanch kafka, you should export the path to kafka. As mentionned in the description of the project, [kafka 2.4.1](https://www.apache.org/dyn/closer.cgi?path=/kafka/2.4.1/kafka-2.4.1-src.tgz) is used
 ```
 $ export KAFKA_PATH=/path/to/kafka
@@ -58,7 +64,7 @@ To stop the server :
 $ ./kafka stop
 ```
 
-### C++
+### - C++
 It is possible to compile the cpp files using CMAKE :
 
 ```
@@ -67,4 +73,24 @@ $ cd build
 $ cmake ..
 $ make
 ```
-We should also copy the csv data to the folder build/src
+
+
+## Deployment :cloud:
+
+### Localy
+Start minikube : 
+```
+$ minikube start
+```
+
+We recommand to start by deleting the deployemnt pods in case they already exist by running from the root:
+```
+kubectl delete -f K8s/deployment.yml
+kubectl delete -f K8s/zookeeper-and-kafka.yml
+```
+
+For the deployment, you have to run the following lines from the root as well :
+```
+kubectl apply -f K8s/zookeeper-and-kafka.yml
+kubectl apply -f K8s/deployment.yml
+```
