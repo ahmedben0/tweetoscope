@@ -7,15 +7,21 @@
 ## The predictor outputs the ARE as a statistic of the performance in the topic "Stat"
 
 from utils import *
+import configparser
 
+
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
 
 ## init logger
-logger = logger.get_logger('Predictor', broker_list='localhost:9092', debug=True)
+logger = logger.get_logger('Predictor', broker_list=config["kafka"]["brokers"], debug=True)
 
 
 ##create topic models with a partition for each time window
 admin_client = KafkaAdminClient(
-    bootstrap_servers="localhost:9092"
+    bootstrap_servers=config["kafka"]["brokers"]
 )
 #we start by deleting any existing topic
 admin_client.delete_topics(['models'])
@@ -27,7 +33,7 @@ admin_client.create_topics(new_topics=topic_list, validate_only=False)
 
 
 ## Create consumers to read from cascade_properties
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
 consumer_cascadeProperties = KafkaConsumer(**consumerProperties)
@@ -35,7 +41,7 @@ consumer_cascadeProperties.subscribe("cascade_properties")
 
 
 ## Create producers
-producerProperties = {"bootstrap_servers":['localhost:9092']}
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
 
 producer_sample = KafkaProducer(**producerProperties)
 producer_alert  = KafkaProducer(**producerProperties)

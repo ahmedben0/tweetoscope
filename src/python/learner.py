@@ -4,13 +4,20 @@
 ## In the topic "models", there's a partition for each time window
 
 from utils import *
+import configparser
+
+
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
 
 ## init logger
-logger = logger.get_logger('Learner', broker_list='localhost:9092', debug=True)
+logger = logger.get_logger('Learner', broker_list=config["kafka"]["brokers"], debug=True)
 
 
 ## Create consumer for reading samples sent by predictor node
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
 consumer_samples = KafkaConsumer(**consumerProperties)
@@ -18,15 +25,11 @@ consumer_samples.subscribe("samples")
 
 
 ## Create producer to send trained models to the predictor
-producerProperties = {"bootstrap_servers":['localhost:9092']}
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
 producer_models = KafkaProducer(**producerProperties)
 
-<<<<<<< HEAD
 
 ## Init dataset with features X=[p, beta, G1] and target Wobs
-=======
-#create dataset
->>>>>>> 7bf1b60 (minor modifications)
 X_samples = pd.DataFrame(columns=['T_obs', 'p', 'beta', 'G1', 'W'])
 
 features_columns = ['p', 'beta', 'G1']
