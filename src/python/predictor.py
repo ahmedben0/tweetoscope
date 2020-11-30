@@ -3,6 +3,20 @@
 from utils import *
 
 
+
+##create topic models
+admin_client = KafkaAdminClient(
+    bootstrap_servers="localhost:9092"
+)
+admin_client.delete_topics(['models'])
+
+time.sleep(5)
+
+topic_list = []
+topic_list.append(NewTopic(name="models", num_partitions=3, replication_factor=1))
+admin_client.create_topics(new_topics=topic_list, validate_only=False)
+
+
 ## Create consumers
 consumerProperties = { "bootstrap_servers":['localhost:9092'],
                        "auto_offset_reset":"earliest",
@@ -12,13 +26,6 @@ consumer_cascadeProperties = KafkaConsumer(**consumerProperties)
 consumer_cascadeProperties.subscribe("cascade_properties")
 
 
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
-                       "auto_offset_reset":"latest",
-                       "group_id":"myOwnPrivatePythonGroup"}
-consumer_models = KafkaConsumer(**consumerProperties)
-consumer_models.subscribe("models")
-
-
 ## Create producers
 producerProperties = {"bootstrap_servers":['localhost:9092']}
 
@@ -26,11 +33,42 @@ producer_sample = KafkaProducer(**producerProperties)
 producer_alert = KafkaProducer(**producerProperties)
 producer_stat = KafkaProducer(**producerProperties)
 
-##create a dict associating each model in models to the right observation window (we train a model for each observation window designated by the key)
-# models = {}
-# for message in consumer_models:
-#     key, value = msg_deserializer(message)
-#     models[key] = value
+# class model for prediction
+class model_consumer:
+    def __init__(self, T_obs, topic='models'):
+        self.T_obs = T_obs
+        self.topic = topic
+        self.partition_number = obs.index(T_obs)
+        self.partition = TopicPartition(self.topic, self.partition_number)
+        self.consumer = None
+        self.model = None
+
+    def init_consumer(self, consumer_properties):
+        consumer_model = KafkaConsumer(**consumerProperties)
+        consumer_model.assign([self.partition])
+        self.consumer = consumer_model
+
+
+    def refresh_model(self):
+        self.consumer.seek_to_end()
+        position = self.consumer.position(self.partition)
+        if position==0:
+            self.model = None
+        else:
+            self.consumer.seek(self.partition, position-1)
+            for msg in self.consumer:
+                value_model = pickle.loads(msg.value)
+                self.model = value_model
+                break
+
+
+models = {}
+for time in obs:
+    models[time] = model_consumer(time)
+    models[time].init_consumer(consumerProperties)
+
+
+
 
 #here, we create a dictionanry with the cascade id and observation time as key, and the parameters we need as values (params, n_true, n_obs)
 #In fact, we have two types of messages in cascade_properties : size, parameters. We collect the values that interest us in both
@@ -56,13 +94,10 @@ for message in consumer_cascadeProperties:
         cid = key[0] #cascade id
         T_obs = key[1] #observation window size
 
-        model = None
-        # consumer_models.assign([TopicPartition('models', obs.index(T_obs))])
-        # for mod in consumer_models:
-        #     k, latest_model = msg_deserializer(message)
-        #     print(latest_model)
-        #     break
-
+        model_consumer = models[T_obs]
+        model_consumer.refresh_model()
+        model = model_consumer.model
+        print(model)
 
         X = value['params'] #p, beta, G1
         n_true = value['n_true']
@@ -80,7 +115,8 @@ for message in consumer_cascadeProperties:
         if model is None:
             w_obs =1
         else: 
-            w_obs = model.predict(X) #predict the w_obs for the obs window
+            w_obs = model.predict(np.array(X).reshape(1, -1))[0] #predict the w_obs for the obs window
+            
         n_pred = estimated_size(n_obs, X, w_obs=w_obs)
         are = compute_are(n_pred, n_true)
         valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}

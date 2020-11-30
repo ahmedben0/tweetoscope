@@ -2,9 +2,12 @@
 
 
 ##Kafka
+import time
+import pickle
 import json
 from json import loads, dumps
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition
+from kafka.admin import KafkaAdminClient, NewTopic
 import ast
 
 from fixed_params import *
@@ -22,13 +25,22 @@ def msg_deserializer(message) :
 
 
 
-def msg_serializer(message):
+def msg_serializer(message, model=False):
     ## this function a custom to deserialize
     ## the kafka message going to the cascade topic
     ## message = key, value
-    messageJSON = dumps(message)
-    messageBytes = messageJSON.encode('utf-8')
+
+    #if model=True(the message is a sklearn model), we serialize with pickle
+    if model:
+        messageBytes = pickle.dumps(message)
+    else:
+        messageJSON = dumps(message)
+        messageBytes = messageJSON.encode('utf-8')
     return messageBytes
+
+
+
+
 
 
 
