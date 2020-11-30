@@ -39,7 +39,7 @@ Information about the project could be found in the official website :link: : [T
 ```
 * As for the C++ files, the python files are also run from ./build/src
 
-### :cloud: Minikube ###
+### :cloud: Minikube ### 
 
 * Start minikube : 
 ```
