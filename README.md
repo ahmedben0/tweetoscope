@@ -29,12 +29,12 @@ if the dockerfiles are changed, one should change the variable name : Docker_ima
 ## Setup :wrench:
 To run this project, one should follow these steps
 
-### - Data
+### - Data :file_folder:
 The csv files could be found in : [neww-data.csv](https://pennerath.pages.centralesupelec.fr/tweetoscope/data/news-data.csv) and [news-index.csv](https://pennerath.pages.centralesupelec.fr/tweetoscope/data/news-index.csv) 
 
 Please put the csv files in the folder data/
 
-### - Requirements
+### - Requirements :package:
 
 Most of the libraries used in the projects are in the file docker/requirements_apt.txt. To install them you can lanch the following command :
 ```
