@@ -3,10 +3,16 @@
 ## We use the MAP estimator.
 
 from utils import *
+import configparser
 
+
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
 
 ## init logger
-logger = logger.get_logger('Estimator', broker_list='localhost:9092', debug=True)
+logger = logger.get_logger('Estimator', broker_list=config["kafka"]["brokers"], debug=True)
 
 ## read config file
 config = configparser.ConfigParser(strict=False)
