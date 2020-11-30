@@ -29,12 +29,12 @@ if the dockerfiles are changed, one should change the variable name : Docker_ima
 ## Setup :wrench:
 To run this project, one should follow these steps
 
-### - Data 
+### - Data
 The csv files could be found in : [neww-data.csv](https://pennerath.pages.centralesupelec.fr/tweetoscope/data/news-data.csv) and [news-index.csv](https://pennerath.pages.centralesupelec.fr/tweetoscope/data/news-index.csv) 
 
 Please put the csv files in the folder data/
 
-### - Requirements
+### - Requirements
 
 Most of the libraries used in the projects are in the file docker/requirements_apt.txt. To install them you can lanch the following command :
 ```
@@ -73,3 +73,18 @@ $ cmake ..
 $ make
 ```
 We should also copy the csv data to the folder build/
+
+
+## Deployment :cloud:
+
+We recommand to start by deleting the deployemnt pods in case they already exist by running from the root:
+```
+kubectl delete -f K8s/deployment.yml
+kubectl delete -f K8s/zookeeper-and-kafka.yml
+```
+
+For the deployment, you have to run the following lines from the root as well :
+```
+kubectl apply -f K8s/zookeeper-and-kafka.yml
+kubectl apply -f K8s/deployment.yml
+```
