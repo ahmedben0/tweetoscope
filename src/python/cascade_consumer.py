@@ -1,5 +1,4 @@
 ## python version of the cascade consumer
-
 import json
 from json import loads
 from kafka import KafkaConsumer
@@ -17,7 +16,7 @@ consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "group_id":"myOwnPrivatePythonGroup"}
 
 consumer = KafkaConsumer(**consumerProperties)
-consumer.subscribe(config["topic"]["out_properties"])
+consumer.subscribe(config["topic"]["out_series"])
 
 
 for message in consumer:

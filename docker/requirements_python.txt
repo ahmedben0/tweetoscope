@@ -1,15 +1,7 @@
-wheel
-argparse
-jsonlib
-kafka-python
-atexit 
-logging 
-time 
 textwrap3
 termcolor
-configparser
-ast
-matplotlib
 numpy 
 scikit-learn
 pandas
+tabulate
+kafka-python

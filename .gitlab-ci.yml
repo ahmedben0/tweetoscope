@@ -8,7 +8,7 @@ stages:
 
 
 compile_cpp:
-    image: $Dockerhub_username/tweeto-main-docker:latest
+    image: $Dockerhub_username/tweeto-main-docker:v3
     stage: build
     tags:
         - docker
@@ -31,13 +31,14 @@ build_collector_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweeto-collector:latest .
+        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweeto-collector:v3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-collector:latest
+        - docker push $Dockerhub_username/tweeto-collector:v3
     rules:
         - changes:
             - docker/Dockerfile.collector
             - src/cpp/*
+            - docker/requirements_apt.txt
 
 
 build_generator_docker_image:
@@ -46,13 +47,14 @@ build_generator_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweeto-generator:latest .
+        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweeto-generator:v3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-generator:latest
+        - docker push $Dockerhub_username/tweeto-generator:v3
     rules:
         - changes:
             - docker/Dockerfile.generator
             - src/cpp/*
+            - docker/requirements_apt.txt
 
 
 build_estimator_docker_image:
@@ -68,6 +70,7 @@ build_estimator_docker_image:
         - changes:
             - docker/Dockerfile.estimator
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_predictor_docker_image:
@@ -83,6 +86,7 @@ build_predictor_docker_image:
         - changes:
             - docker/Dockerfile.predictor
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_learner_docker_image:
@@ -98,6 +102,7 @@ build_learner_docker_image:
         - changes:
             - docker/Dockerfile.learner
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_dashboard_docker_image:
@@ -113,6 +118,7 @@ build_dashboard_docker_image:
         - changes:
             - docker/Dockerfile.dashboard
             - src/python/*
+            - docker/requirements_python.txt
 
 
 build_monitor_docker_image:
@@ -128,12 +134,13 @@ build_monitor_docker_image:
         - changes:
             - docker/Dockerfile.monitor
             - src/python/*
+            - docker/requirements_python.txt
 
 
 ################################################
 
 test:
-    image: $Dockerhub_username/tweeto-main-docker:latest
+    image: $Dockerhub_username/tweeto-main-docker:v2
     stage: test
     tags:
         - docker

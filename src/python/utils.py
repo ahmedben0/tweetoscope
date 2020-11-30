@@ -2,30 +2,48 @@
 
 
 ##Kafka
+import time
+import pickle
 import json
 from json import loads, dumps
-from kafka import KafkaConsumer, KafkaProducer
+from kafka import KafkaConsumer, KafkaProducer, TopicPartition
+from kafka.admin import KafkaAdminClient, NewTopic
 import ast
+
+from fixed_params import *
+
 
 def msg_deserializer(message) :
     ## this function a custom to deserialize
     ## the kafka message comming from the cascade topic
     ## message = key, value
 
-    key = loads(message.key.decode('utf-8'))
+    if message.key :
+        key = loads(message.key.decode('utf-8'))
+    else : 
+        key = "None"
     value = ast.literal_eval(message.value.decode("UTF-8"))
     #value = loads(message.value.decode('utf-8').replace('\'', '\"'))
     return (key, value)
 
 
 
-def msg_serializer(message):
+def msg_serializer(message, model=False):
     ## this function a custom to deserialize
     ## the kafka message going to the cascade topic
     ## message = key, value
-    messageJSON = dumps(message)
-    messageBytes = messageJSON.encode('utf-8')
+
+    #if model=True(the message is a sklearn model), we serialize with pickle
+    if model:
+        messageBytes = pickle.dumps(message)
+    else:
+        messageJSON = dumps(message)
+        messageBytes = messageJSON.encode('utf-8')
     return messageBytes
+
+
+
+
 
 
 
@@ -65,7 +83,7 @@ def loglikelihood(params, history, t=None):
         if(mis[i-1] + previous_ai <= 0):
             print("Bad value",mis[i-1]  + previous_ai)
         previous_ai = np.exp(-beta*(tis[i]-tis[i-1]))*(mis[i-1]+previous_ai)
-        loglikelihood += np.log(previous_ai)
+        loglikelihood += np.log(1+previous_ai)
 
     loglikelihood -= p*(np.sum(mis) - np.exp(-beta*(t-tis[n-1]))*(mis[n-1]+previous_ai))
 
@@ -73,9 +91,9 @@ def loglikelihood(params, history, t=None):
 
 
 
-def compute_MAP(history, alpha=2.4, mu=10,
-                prior_params = [ 0.02, 0.0002, 0.01, 0.001, -0.1],
-                max_n_star = 1, display=False, t=None):
+def compute_MAP(history, alpha=alpha, mu=mu,
+                prior_params = prior_params,
+                max_n_star = max_n_star, display=False, t=None):
     """
     Returns the pair of the estimated logdensity of a posteriori and parameters (as a numpy array)
 
@@ -154,36 +172,101 @@ def compute_MAP(history, alpha=2.4, mu=10,
 
 ##This is the function for computing the estimated size of the cascade
 ## For simple estimator (direct computation without radnom forest) use w_obs=1
-def estimated_size(params, history, alpha=2.4, mu=10, t=None, w_obs=1):
+# def estimated_size(params, history, alpha=alpha, mu=mu, t=None, w_obs=1):
+#     """
+#     Returns the expected total numbers of points for a set of time points
+    
+#     params   -- parameter tuple (p,beta) of the Hawkes process
+#     history  -- (n,2) numpy array containing marked time points (t_i,m_i)  
+#     alpha    -- power parameter of the power-law mark distribution
+#     mu       -- min value parameter of the power-law mark distribution
+#     t        -- current time (i.e end of observation window)
+#     """
+
+#     p,beta = params
+    
+#     n_star = p*mu*(alpha-1)/(alpha-2)
+    
+#     if t is None:
+#         t = history[-1, 0] 
+    
+#     history_at_t = history[history[:, 0] <= t]
+    
+#     n = len(history_at_t)
+    
+#     G1=0
+#     for t_i, m_i in history_at_t:
+#         G1 += m_i*(np.exp(-beta*(t-t_i)))
+#     G1*=p
+    
+#     N_infini = n + w_obs*(G1/(1-n_star))
+    
+#     return N_infini
+
+
+##Function for computing G1 parameter
+def compute_G1(params, cascade):
     """
-    Returns the expected total numbers of points for a set of time points
+    Returns G1
 
-    params   -- parameter tuple (p,beta) of the Hawkes process
-    history  -- (n,2) numpy array containing marked time points (t_i,m_i)
-    alpha    -- power parameter of the power-law mark distribution
-    mu       -- min value parameter of the power-law mark distribution
-    t        -- current time (i.e end of observation window)
+    params -- parameter tuple (p,beta) of the Hawkes process
+    cascade -- (n,2) numpy array containing marked time points (t_i,m_i) 
     """
-
-    p,beta = params
-
-    n_star = p*mu*(alpha-1)/(alpha-2)
-
-    if t is None:
-        t = history[-1, 0]
-
-    history_at_t = history[history[:, 0] <= t]
-
-    n = len(history_at_t)
-
+    p, beta = params
     G1=0
-    for t_i, m_i in history_at_t:
+    t = cascade[-1, 0]
+    for t_i, m_i in cascade:
         G1 += m_i*(np.exp(-beta*(t-t_i)))
     G1*=p
 
-    N_infini = n + w_obs*(G1/(1-n_star))
+    return G1
 
-    return N_infini
+
+
+##This is the function for computing the estimated size of the cascade
+## For simple estimator (direct computation without radnom forest) use w_obs=1
+def estimated_size(n_obs, params, w_obs=1, alpha=alpha, mu=mu):
+    """
+    Returns the expected total numbers of points for a set of time points
+    
+    n_obs -- int, the size of the observed window
+    params -- parameter tuple (p,beta, G1) of the Hawkes process sent by the estimator
+    w_obs -- the w computed by the model associated to the obs window, default 1 (if no trained model)
+    alpha    -- power parameter of the power-law mark distribution
+    mu       -- min value parameter of the power-law mark distribution
+    
+    """
+
+    p, beta, G1 = params
+    n_star = p*mu*(alpha-1)/(alpha-2)
+    n_pred = n_obs + w_obs*(G1/(1-n_star))
+
+    return n_pred
+
+
+
+def compute_true_omega(n_obs, n_true, params,  alpha=alpha, mu=mu):
+    """
+    compute the true W used for random forest training.
+    We use the true value of the size of the cascade to compute the value of the W we want to find
+    
+    n_obs  -- int, the size of the observed window
+    n_true -- the final size of the cascade, once the cascade is considered idle and over
+    params -- parameter tuple (p,beta, G1) of the Hawkes process sent by the estimator
+    alpha  -- power parameter of the power-law mark distribution
+    mu     -- min value parameter of the power-law mark distribution
+    """
+
+    p, beta, G1 = params
+    n_star = p*mu*(alpha-1)/(alpha-2)
+
+    _W = (n_true - n_obs)*(1-n_star)
+
+    if G1 == 0 : 
+        return _W
+
+    return _W/G1
+
 
 
 
