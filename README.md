@@ -57,7 +57,7 @@ Information about the project could be found in the official website :link: : [T
     $ kubectl apply -f K8s/zookeeper-and-kafka.yml
     $ kubectl apply -f K8s/deployment.yml
 ```
-* [ ] Remark: it is also possible to only run the python script [dep.py](./dep.py) for the deployment.
+* Remarks: it is also possible to only run the python script [deployment.py](./deployment.py) for the deployment.
 
 
 ## :wrench: Setup ##
