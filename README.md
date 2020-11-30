@@ -27,10 +27,10 @@ Information about the project could be found in the official website :link: : [T
 ```
 * Build the C++ project from the root :
 ```
-     $ mkdir build
-     $ cd build
-     $ cmake ..
-     $ make
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
 ```
 * Run the generator and the collector from ./build/src using the files for the configuration : [params.config](./src/configs/params.config) and [collector.ini](./src/configs/collector.ini)
 ```
