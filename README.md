@@ -77,7 +77,10 @@ $ make
 
 ## Deployment :cloud:
 
-### Localy
+Local vs cluster 
+
+### Localy 
+
 Start minikube : 
 ```
 $ minikube start
