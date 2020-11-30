@@ -1,37 +1,37 @@
-## This function estimates the parameters (p, beta) of the generating process for the cascade.
+## This function estimates the parameters (p, beta) 
+## of the generating  process for the cascade.
 ## We use the MAP estimator.
 
 from utils import *
-from json import dumps
-import configparser
+
+
 
 ## read config file
 config = configparser.ConfigParser(strict=False)
 ## the script is executed from the folder "src"
 config.read('./configs/collector.ini')
 
-## Create consumer
+
+## Create consumer for cascade_series topic
 consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
-
 consumer = KafkaConsumer(**consumerProperties)
 consumer.subscribe(config["topic"]["out_series"])
 
 
-## Create producer
+## Create producer to send messages to cascade_properties 
+## with the estimated params for the Hawkes process
 producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
-
 producer = KafkaProducer(**producerProperties)
 
 
-## Read cascades from cascade_series
+## Read cascades from cascade_series and estimate params 
+## for the Hawkes process
 for message in consumer:
-   # message = key, value
-   ## value.keys() = dict_keys(['key', 'source_id', 'msg', 'latest_time', 'list_retweets'])
-   ## value['list_retweets'] is a list of dictionnaries => dict_keys(['time', 'magnitude', 'info'])
    key, value = msg_deserializer(message)
    cascade = np.array(value['tweets'])
+  
    #estimate parameters p, beta
    estimated_params = compute_MAP(cascade)[1].tolist()
 

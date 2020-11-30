@@ -1,41 +1,53 @@
-## This is the predictor part. We use a random forest model
+## This is the predictor part. 
+## The predictor uses the params issued by the estimator and 
+## the model sent by the learner to predict the final size of the cascade.
+## For each time window we fetch the last model in the corresponding partition of the topic "models"
+## The predictor send samples to the learner to improve training.
+## The predictor outputs a list of cascades with a an important predicted size in the topic "alert".
+## The predictor outputs the ARE as a statistic of the performance in the topic "Stat"
 
 from utils import *
 
 
 
-##create topic models
+##create topic models with a partition for each time window
 admin_client = KafkaAdminClient(
     bootstrap_servers="localhost:9092"
 )
+#we start by deleting any existing topic
 admin_client.delete_topics(['models'])
-
 time.sleep(5)
 
 topic_list = []
-topic_list.append(NewTopic(name="models", num_partitions=3, replication_factor=1))
+topic_list.append(NewTopic(name="models", num_partitions=len(obs), replication_factor=1))
 admin_client.create_topics(new_topics=topic_list, validate_only=False)
 
 
-## Create consumers
+## Create consumers to read from cascade_properties
 consumerProperties = { "bootstrap_servers":['localhost:9092'],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
-
 consumer_cascadeProperties = KafkaConsumer(**consumerProperties)
 consumer_cascadeProperties.subscribe("cascade_properties")
 
 
 ## Create producers
 producerProperties = {"bootstrap_servers":['localhost:9092']}
-
-producer_sample = KafkaProducer(**producerProperties)
-producer_alert = KafkaProducer(**producerProperties)
-producer_stat = KafkaProducer(**producerProperties)
+producer_sample = KafkaProducer(**producerProperties) #for sedning samples to the learner
+producer_alert = KafkaProducer(**producerProperties) #for producing the longest cascades
+producer_stat = KafkaProducer(**producerProperties) #for producing stats about the performance (ARE)
 
 # class model for prediction
 class model_consumer:
     def __init__(self, T_obs, topic='models'):
+        """
+        T_obs -- int, observation time window
+        topic -- str, name of the topic from which e extract models
+        partition_number -- int, the corresponding partition number for the observation window
+        partiton -- kafka partition
+        consumer -- kafka consumer assigned the current partition
+        model -- sklearn random forest model, latest produced on the partition
+        """
         self.T_obs = T_obs
         self.topic = topic
         self.partition_number = obs.index(T_obs)
@@ -44,24 +56,27 @@ class model_consumer:
         self.model = None
 
     def init_consumer(self, consumer_properties):
+        ## initialisation of the consumer (properties + assign partition)
         consumer_model = KafkaConsumer(**consumerProperties)
         consumer_model.assign([self.partition])
         self.consumer = consumer_model
 
 
     def refresh_model(self):
-        self.consumer.seek_to_end()
-        position = self.consumer.position(self.partition)
-        if position==0:
+        ## read alst produced model by the learner in the partition
+        self.consumer.seek_to_end() #go to last offset
+        position = self.consumer.position(self.partition) #number of the last offset
+        if position==0: # if no model yet assign None
             self.model = None
         else:
-            self.consumer.seek(self.partition, position-1)
+            self.consumer.seek(self.partition, position-1) #offset fo the last message sent
             for msg in self.consumer:
                 value_model = pickle.loads(msg.value)
-                self.model = value_model
+                self.model = value_model #assign model
                 break
 
 
+## Initialize consumers for each models
 models = {}
 for time in obs:
     models[time] = model_consumer(time)
@@ -70,11 +85,15 @@ for time in obs:
 
 
 
-#here, we create a dictionanry with the cascade id and observation time as key, and the parameters we need as values (params, n_true, n_obs)
-#In fact, we have two types of messages in cascade_properties : size, parameters. We collect the values that interest us in both
+## We create a dict with the cascade id and observation time as key, 
+## and the parameters we need as values (params, n_true, n_obs, msg).
+##In fact, we have two types of messages in cascade_properties : size, parameters. 
+## We collect the values that interest us in each.
 cascades = {}
 
 for message in consumer_cascadeProperties:
+
+    #first step collect all the wanted values from each cascade
     key, value = msg_deserializer(message)
     dict_key = (value['cid'], key) #we identify each cascade by its id and the key(observation window)
     if dict_key not in cascades.keys():
@@ -87,23 +106,27 @@ for message in consumer_cascadeProperties:
         cascades[dict_key]['msg'] = value['msg']
 
 
+    # check if we have all the values
     wanted_keys = ['n_true', 'n_obs', 'params', 'msg']
     if all(elem in cascades[dict_key].keys()  for elem in wanted_keys):
         key, value = dict_key, cascades[dict_key]
 
+        ## init values
         cid = key[0] #cascade id
         T_obs = key[1] #observation window size
-
-        model_consumer = models[T_obs]
-        model_consumer.refresh_model()
-        model = model_consumer.model
-        print(model)
-
+        
         X = value['params'] #p, beta, G1
         n_true = value['n_true']
         n_obs = value['n_obs']
 
         W = compute_true_omega(n_obs, n_true, X) #the W we want to predict
+
+        #refresh model for the corresponding model consumer
+        model_consumer = models[T_obs]
+        model_consumer.refresh_model()
+        model = model_consumer.model
+        
+
 
         #we compute here the message of type "sample", i.e a sample to feed the random forest
         #inputs: params, target: omega

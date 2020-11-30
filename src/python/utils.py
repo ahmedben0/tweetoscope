@@ -1,17 +1,27 @@
-##This file contains utilities function fused for the estimator and predictor part
+##This file contains utilities function fused for the estimator, predictor and learner
 
 
-##Kafka
+##Import modules
 import time
 import pickle
 import json
 from json import loads, dumps
+import configparser
+import ast
+
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition
 from kafka.admin import KafkaAdminClient, NewTopic
-import ast
+
+import numpy as np
+import pandas as pd
+import scipy.optimize as optim
+from sklearn.ensemble import RandomForestRegressor
 
 from fixed_params import *
 
+
+
+### Serializer and deserializer (for kafka)
 
 def msg_deserializer(message) :
     ## this function a custom to deserialize
@@ -44,9 +54,7 @@ def msg_serializer(message, model=False):
 
 
 
-##Estimator
-import numpy as np
-import scipy.optimize as optim
+### Estimator
 
 
 def loglikelihood(params, history, t=None):
@@ -165,43 +173,9 @@ def compute_MAP(history, alpha=alpha, mu=mu,
     return(-res.fun, res.x)
 
 
-## Predictor
-
-##This is the function for computing the estimated size of the cascade
-## For simple estimator (direct computation without radnom forest) use w_obs=1
-# def estimated_size(params, history, alpha=alpha, mu=mu, t=None, w_obs=1):
-#     """
-#     Returns the expected total numbers of points for a set of time points
-    
-#     params   -- parameter tuple (p,beta) of the Hawkes process
-#     history  -- (n,2) numpy array containing marked time points (t_i,m_i)  
-#     alpha    -- power parameter of the power-law mark distribution
-#     mu       -- min value parameter of the power-law mark distribution
-#     t        -- current time (i.e end of observation window)
-#     """
-
-#     p,beta = params
-    
-#     n_star = p*mu*(alpha-1)/(alpha-2)
-    
-#     if t is None:
-#         t = history[-1, 0] 
-    
-#     history_at_t = history[history[:, 0] <= t]
-    
-#     n = len(history_at_t)
-    
-#     G1=0
-#     for t_i, m_i in history_at_t:
-#         G1 += m_i*(np.exp(-beta*(t-t_i)))
-#     G1*=p
-    
-#     N_infini = n + w_obs*(G1/(1-n_star))
-    
-#     return N_infini
+### Predictor
 
 
-##Function for computing G1 parameter
 def compute_G1(params, cascade):
     """
     Returns G1
