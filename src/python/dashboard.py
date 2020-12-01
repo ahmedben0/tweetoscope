@@ -39,6 +39,8 @@ class DynamicPrintDashboard:
         self.consumer.subscribe(topic)
         self.hottestTweets = []
         self.K = max(K_hottest,1) ## 0 is not allowed
+        ## init logger
+        self.logger = logger.get_logger('Dashboard', broker_list=config["kafka"]["brokers"], debug=True)
 
     def display(self) :
         clear()
@@ -48,7 +50,7 @@ class DynamicPrintDashboard:
             l.append(list(m.values())[1:])
             if not h :
                 h = list(m.keys())[1:]
-        print(tabulate(l, headers=h, tablefmt='fancy_grid'))
+        self.logger.debug(f"\n{tabulate(l, headers=h, tablefmt='fancy_grid')}")
 
     def addToList(self, new_msg) :
         self.hottestTweets.append(new_msg)

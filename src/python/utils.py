@@ -91,7 +91,7 @@ def loglikelihood(params, history, t=None):
         if(mis[i-1] + previous_ai <= 0):
             print("Bad value",mis[i-1]  + previous_ai)
         previous_ai = np.exp(-beta*(tis[i]-tis[i-1]))*(mis[i-1]+previous_ai)
-        loglikelihood += np.log(previous_ai)
+        loglikelihood += np.log(1+previous_ai)
 
     loglikelihood -= p*(np.sum(mis) - np.exp(-beta*(t-tis[n-1]))*(mis[n-1]+previous_ai))
 
@@ -230,18 +230,22 @@ def compute_true_omega(n_obs, n_true, params,  alpha=alpha, mu=mu):
     compute the true W used for random forest training.
     We use the true value of the size of the cascade to compute the value of the W we want to find
     
-    n_obs -- int, the size of the observed window
+    n_obs  -- int, the size of the observed window
     n_true -- the final size of the cascade, once the cascade is considered idle and over
     params -- parameter tuple (p,beta, G1) of the Hawkes process sent by the estimator
-    alpha    -- power parameter of the power-law mark distribution
-    mu       -- min value parameter of the power-law mark distribution
+    alpha  -- power parameter of the power-law mark distribution
+    mu     -- min value parameter of the power-law mark distribution
     """
 
     p, beta, G1 = params
     n_star = compute_n_star(p, alpha, mu)
-    W = (n_true - n_obs)*(1-n_star)/G1
+    _W = (n_true - n_obs)*(1-n_star)
 
-    return W
+    if G1 == 0 : 
+        ## just in case G1 equals to 0
+        return _W
+
+    return _W/G1
 
 
 

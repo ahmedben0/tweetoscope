@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 wheel
 argparse
 jsonlib
@@ -14,3 +15,12 @@ numpy
 scikit-learn
 pandas
 tabulate
+=======
+textwrap3
+termcolor
+numpy 
+scikit-learn
+pandas
+tabulate
+kafka-python
+>>>>>>> master

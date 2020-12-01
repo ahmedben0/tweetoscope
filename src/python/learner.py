@@ -1,11 +1,11 @@
 ## This is the learner part.
 ## The learner is a random forest, for each observation window
-## inputs : params (p, beta, G1), target: n_tot(size of the cascade).
-## In the topic "models", there's a partition for each time window
+## inputs : params (p, beta, G1), target: n_tot(size of the cascade)
 
 from utils import *
+from sklearn.ensemble import RandomForestRegressor
+import pandas as pd
 import configparser
-
 
 ## read config file
 config = configparser.ConfigParser(strict=False)
@@ -23,6 +23,8 @@ consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
 consumer_samples = KafkaConsumer(**consumerProperties)
 consumer_samples.subscribe("samples")
 
+#create producer
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
 
 ## Create producer to send trained models to the predictor
 producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
@@ -58,10 +60,7 @@ for message in consumer_samples:
             model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
             model.fit(features, target)
 
-            logger.info('NEW MODEL:')
-            logger.info('Time window: '+str(t_obs))
-            logger.info('Number of samples: '+str(len(features)))
-
+            logger.debug(f'[NEW MODEL] Time window: {t_obs} - Number of samples: {len(features)}')
 
             #send trained model to the rpedictor on the corresponding partition for the time window partition
             producer_models.send("models", value=msg_serializer(model, model=True), key=msg_serializer(t_obs), partition=obs.index(t_obs))

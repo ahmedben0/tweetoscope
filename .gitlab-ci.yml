@@ -1,14 +1,13 @@
 stages:
     - build
     - build_docker
-    - test
 
 
 ################################################
 
 
 compile_cpp:
-    image: $Dockerhub_username/tweeto-main-docker:v1
+    image: $Dockerhub_username/tweetoscope-cpp:main-1 
     stage: build
     tags:
         - docker
@@ -20,7 +19,24 @@ compile_cpp:
     artifacts:
         paths:
             - build/
+        expire_in: 1 days
 
+## this image is built here so that in case of a new image
+## all the python images using this image won't have to push the whole data
+build_main_python_docker_image:
+    image: docker:latest
+    stage: build
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.python-main -t $Dockerhub_username/tweetoscope-python:main-1 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-python:main-1
+    rules:
+        - changes:
+            - docker/Dockerfile.python-main
+            - src/python/*
+            - docker/requirements_python.txt
 
 ################################################
 
@@ -31,9 +47,9 @@ build_collector_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweeto-collector:latest .
+        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweetoscope-cpp:collector-1 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-collector:latest
+        - docker push $Dockerhub_username/tweetoscope-cpp:collector-1
     rules:
         - changes:
             - docker/Dockerfile.collector
@@ -47,9 +63,9 @@ build_generator_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweeto-generator:latest .
+        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweetoscope-cpp:generator-1 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-generator:latest
+        - docker push $Dockerhub_username/tweetoscope-cpp:generator-1
     rules:
         - changes:
             - docker/Dockerfile.generator
@@ -63,9 +79,9 @@ build_estimator_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.estimator -t $Dockerhub_username/tweeto-estimator:latest .
+        - docker build -f docker/Dockerfile.estimator -t $Dockerhub_username/tweetoscope-python:estimator-1 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-estimator:latest
+        - docker push $Dockerhub_username/tweetoscope-python:estimator-1
     rules:
         - changes:
             - docker/Dockerfile.estimator
@@ -79,9 +95,9 @@ build_predictor_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.predictor -t $Dockerhub_username/tweeto-predictor:latest .
+        - docker build -f docker/Dockerfile.predictor -t $Dockerhub_username/tweetoscope-python:predictor-1 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-predictor:latest
+        - docker push $Dockerhub_username/tweetoscope-python:predictor-1
     rules:
         - changes:
             - docker/Dockerfile.predictor
@@ -95,9 +111,9 @@ build_learner_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.learner -t $Dockerhub_username/tweeto-learner:latest .
+        - docker build -f docker/Dockerfile.learner -t $Dockerhub_username/tweetoscope-python:learner-1 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-learner:latest
+        - docker push $Dockerhub_username/tweetoscope-python:learner-1
     rules:
         - changes:
             - docker/Dockerfile.learner
@@ -111,9 +127,9 @@ build_dashboard_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.dashboard -t $Dockerhub_username/tweeto-dashboard:latest .
+        - docker build -f docker/Dockerfile.dashboard -t $Dockerhub_username/tweetoscope-python:dashboard-1 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-dashboard:latest
+        - docker push $Dockerhub_username/tweetoscope-python:dashboard-1
     rules:
         - changes:
             - docker/Dockerfile.dashboard
@@ -127,23 +143,12 @@ build_monitor_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.monitor -t $Dockerhub_username/tweeto-monitor:latest .
+        - docker build -f docker/Dockerfile.monitor -t $Dockerhub_username/tweetoscope-python:monitor-1 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweeto-monitor:latest
+        - docker push $Dockerhub_username/tweetoscope-python:monitor-1
     rules:
         - changes:
             - docker/Dockerfile.monitor
             - src/python/*
             - docker/requirements_python.txt
 
-
-################################################
-
-test:
-    image: $Dockerhub_username/tweeto-main-docker:v1
-    stage: test
-    tags:
-        - docker
-    script:
-        - echo "add tests"
-        - echo "!"
