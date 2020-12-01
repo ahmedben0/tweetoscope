@@ -29,3 +29,4 @@ add_compile_options(-O3 -Wall)
 add_subdirectory(src/cpp)
 
 file(COPY src/configs DESTINATION ${CMAKE_BINARY_DIR}/src)
+file(COPY src/logs DESTINATION ${CMAKE_BINARY_DIR}/logs)
