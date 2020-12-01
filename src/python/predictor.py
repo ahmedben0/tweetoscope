@@ -49,6 +49,7 @@ class model_consumer:
         partition_number -- int, the corresponding partition number for the observation window
         partiton -- kafka partition
         consumer -- kafka consumer assigned the current partition
+        last_position -- int, the last offset we extracted. used to check if new models are available.
         model -- sklearn random forest model, latest produced on the partition
         """
         self.T_obs = T_obs
@@ -56,6 +57,7 @@ class model_consumer:
         self.partition_number = obs.index(T_obs)
         self.partition = TopicPartition(self.topic, self.partition_number)
         self.consumer = None
+        self.last_position = 0
         self.model = None
 
     def init_consumer(self, consumer_properties):
@@ -66,12 +68,13 @@ class model_consumer:
 
 
     def refresh_model(self):
-        ## read alst produced model by the learner in the partition
+        ## read last produced model by the learner in the partition
         self.consumer.seek_to_end() #go to last offset
         position = self.consumer.position(self.partition) #number of the last offset
         if position==0: # if no model yet assign None
             self.model = None
-        else:
+        elif position > self.last_position:
+            self.last_position = position
             self.consumer.seek(self.partition, position-1) #offset fo the last message sent
             for msg in self.consumer:
                 value_model = pickle.loads(msg.value)
@@ -133,6 +136,8 @@ for message in consumer_cascadeProperties:
 
         #we compute here the message of type "sample", i.e a sample to feed the random forest
         #inputs: params, target: omega
+        features = X
+        features[0] = compute_n_star(X[0]) #we replace p by n_star
         valeurs_sample =  {'type': 'sample', 'cid': cid, 'X' : X, 'W': W}
         producer_sample.send("samples", value=msg_serializer(valeurs_sample), key=msg_serializer(T_obs))
         logger.info('NEW SAMPLE:')
@@ -143,7 +148,7 @@ for message in consumer_cascadeProperties:
             w_obs =1
         else: 
             w_obs = model.predict(np.array(X).reshape(1, -1))[0] #predict the w_obs for the obs window
-            
+        
         n_pred = estimated_size(n_obs, X, w_obs=w_obs)
         are = compute_are(n_pred, n_true)
         valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
@@ -152,11 +157,11 @@ for message in consumer_cascadeProperties:
         logger.info(valeurs_stat)
 
         #we compute the alert message
-        if n_pred>=100:
-            valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
-            producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
-            logger.info('ALERT:')
-            logger.info(valeurs_alert)
+        
+        valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
+        producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
+        logger.info('ALERT:')
+        logger.info(valeurs_alert)
         
 
 

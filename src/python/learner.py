@@ -23,9 +23,9 @@ producer_models = KafkaProducer(**producerProperties)
 
 
 ## Init dataset with features X=[p, beta, G1] and target Wobs
-X_samples = pd.DataFrame(columns=['T_obs', 'p', 'beta', 'G1', 'W'])
+X_samples = pd.DataFrame(columns=['T_obs', 'n_star', 'beta', 'G1', 'W'])
 
-features_columns = ['p', 'beta', 'G1']
+features_columns = ['n_star', 'beta', 'G1']
 target_columns = ['W']
 
 
@@ -41,7 +41,7 @@ for message in consumer_samples:
 
     counter += 1
     
-    if counter==10:
+    if counter==50:
         #Train one model by observation window time
         for t_obs in X_samples.T_obs.unique():
 
