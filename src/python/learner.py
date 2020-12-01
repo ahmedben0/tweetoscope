@@ -48,7 +48,7 @@ for message in consumer_samples:
 
     counter += 1
     
-    if counter==50:
+    if counter==10:
         #Train one model by observation window time
         for t_obs in X_samples.T_obs.unique():
 

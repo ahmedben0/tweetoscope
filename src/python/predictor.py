@@ -23,9 +23,13 @@ logger = logger.get_logger('Predictor', broker_list=config["kafka"]["brokers"], 
 admin_client = KafkaAdminClient(
     bootstrap_servers=config["kafka"]["brokers"]
 )
-#we start by deleting any existing topic
-admin_client.delete_topics(['models'])
-time.sleep(5)
+try : 
+    #we start by deleting any existing topic
+    admin_client.delete_topics(['models'])
+    time.sleep(5)
+except :
+    pass
+
 
 topic_list = []
 topic_list.append(NewTopic(name="models", num_partitions=len(obs), replication_factor=1))
@@ -165,7 +169,7 @@ for message in consumer_cascadeProperties:
 
         #we compute the alert message
         
-        valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
+        valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : int(n_pred)}
         producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
         logger.info('ALERT:')
         logger.info(valeurs_alert)
