@@ -50,7 +50,7 @@ class DynamicPrintDashboard:
             l.append(list(m.values())[1:])
             if not h :
                 h = list(m.keys())[1:]
-        self.logger.info(f"\n{tabulate(l, headers=h, tablefmt='fancy_grid')}")
+        self.logger.debug(f"\n{tabulate(l, headers=h, tablefmt='fancy_grid')}")
 
     def addToList(self, new_msg) :
         self.hottestTweets.append(new_msg)

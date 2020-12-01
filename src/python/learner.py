@@ -59,10 +59,7 @@ for message in consumer_samples:
             model = RandomForestRegressor(max_depth=max_depth, random_state=random_state)
             model.fit(features, target)
 
-            logger.info(f'[NEW MODEL] Time window: {t_obs} - Number of samples: {len(features)}')
-            #logger.info('Time window: '+str(t_obs))
-            #logger.info('Number of samples: '+str(len(features)))
-
+            logger.debug(f'[NEW MODEL] Time window: {t_obs} - Number of samples: {len(features)}')
 
             #send trained model to the rpedictor on the corresponding partition for the time window partition
             producer_models.send("models", value=msg_serializer(model, model=True), key=msg_serializer(t_obs), partition=obs.index(t_obs))

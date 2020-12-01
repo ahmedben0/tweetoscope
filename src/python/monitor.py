@@ -34,6 +34,6 @@ for message in consumer:
      GLOBAL_MEAN = ((counter-1)*GLOBAL_MEAN + _are)/(counter)
 
      if counter%10 == 0 :
-         logger.info(f'[Monitor] MEAN : {int(GLOBAL_MEAN)} - MAX : {int(GLOBAL_MAX)} - MIN : {int(GLOBAL_MIN)}')
+         logger.debug(f'MEAN : {int(GLOBAL_MEAN)} - MAX : {int(GLOBAL_MAX)} - MIN : {int(GLOBAL_MIN)}')
 
 

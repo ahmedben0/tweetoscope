@@ -157,8 +157,7 @@ for message in consumer_cascadeProperties:
         #inputs: params, target: omega
         valeurs_sample =  {'type': 'sample', 'cid': cid, 'X' : X, 'W': W}
         producer_sample.send("samples", value=msg_serializer(valeurs_sample), key=msg_serializer(T_obs))
-        logger.info(f'[NEW SAMPLE] {valeurs_sample}')
-        #logger.info(valeurs_sample)
+        logger.debug(f'[NEW SAMPLE] {valeurs_sample}')
 
         #We compute the ARE (messages of type stat)
         if model is None:
@@ -170,15 +169,15 @@ for message in consumer_cascadeProperties:
         are = compute_are(n_pred, n_true)
         valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
         producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
-        logger.info(f'[ARE] {valeurs_stat}')
-        #logger.info(valeurs_stat)
+        logger.debug(f'[ARE] {valeurs_stat}')
+        logger.info(f'[ARE] {valeurs_stat["ARE"]}')
+
 
         #we compute the alert message
-        if n_pred>=100:
-            valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
-            producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
-            logger.info(f'[ALERT] {valeurs_alert}')
-            #logger.info(valeurs_alert)
+        valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
+        producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
+        logger.debug(f'[ALERT] {valeurs_alert}')
+        logger.info(f'[ALERT] {valeurs_alert["n_tot"]}')
         
 
         
