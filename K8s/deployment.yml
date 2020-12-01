@@ -55,7 +55,7 @@ spec:
     spec:
       containers:
       - name: estimator-container
-        image: fellajimed/tweetoscope-python:estimator-1
+        image: fellajimed/tweetoscope-python:estimator-2
         imagePullPolicy: Always
 ---
 apiVersion: apps/v1
@@ -75,7 +75,7 @@ spec:
     spec:
       containers:
       - name: predictor-container
-        image: fellajimed/tweetoscope-python:predictor-1
+        image: fellajimed/tweetoscope-python:predictor-2
         imagePullPolicy: Always
 ---
 apiVersion: apps/v1
@@ -95,7 +95,7 @@ spec:
     spec:
       containers:
       - name: learner-container
-        image: fellajimed/tweetoscope-python:learner-1
+        image: fellajimed/tweetoscope-python:learner-2
         imagePullPolicy: Always
 ---
 apiVersion: apps/v1
@@ -115,7 +115,7 @@ spec:
     spec:
       containers:
       - name: dashboard-container
-        image: fellajimed/tweetoscope-python:dashboard-1
+        image: fellajimed/tweetoscope-python:dashboard-2
         imagePullPolicy: Always
 ---
 apiVersion: apps/v1
@@ -135,6 +135,6 @@ spec:
     spec:
       containers:
       - name: monitor-container
-        image: fellajimed/tweetoscope-python:monitor-1
+        image: fellajimed/tweetoscope-python:monitor-2
         imagePullPolicy: Always
 

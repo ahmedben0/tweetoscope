@@ -196,6 +196,12 @@ def compute_G1(params, cascade):
     return G1
 
 
+def compute_n_star(p, alpha=alpha, mu=mu):
+    """
+    returns n*
+    """
+    return p*mu*(alpha-1)/(alpha-2)
+
 
 ##This is the function for computing the estimated size of the cascade
 ## For simple estimator (direct computation without radnom forest) use w_obs=1
@@ -212,7 +218,7 @@ def estimated_size(n_obs, params, w_obs=1, alpha=alpha, mu=mu):
     """
 
     p, beta, G1 = params
-    n_star = p*mu*(alpha-1)/(alpha-2)
+    n_star = compute_n_star(p, alpha, mu)
     n_pred = n_obs + w_obs*(G1/(1-n_star))
 
     return n_pred
@@ -232,11 +238,11 @@ def compute_true_omega(n_obs, n_true, params,  alpha=alpha, mu=mu):
     """
 
     p, beta, G1 = params
-    n_star = p*mu*(alpha-1)/(alpha-2)
-
+    n_star = compute_n_star(p, alpha, mu)
     _W = (n_true - n_obs)*(1-n_star)
 
     if G1 == 0 : 
+        ## just in case G1 equals to 0
         return _W
 
     return _W/G1

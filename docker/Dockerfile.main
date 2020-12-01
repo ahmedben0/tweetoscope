@@ -1,0 +1,34 @@
+FROM ubuntu:18.04
+
+COPY docker/requirements_apt.txt /usr/
+
+## install packages
+RUN apt-get update && cat /usr/requirements_apt.txt | xargs apt-get install -y
+
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+
+## cppkafka
+RUN git clone https://github.com/mfontanini/cppkafka.git cppkafka \
+    && cd cppkafka \
+    && mkdir build \
+    && cd build \
+    && cmake .. \
+    && make -j \
+    && make install
+
+## gaml
+RUN git clone https://github.com/HerveFrezza-Buet/gaml gaml \
+    && cd gaml \
+    && mkdir -p gaml/build \
+    && cd gaml/build \
+    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+    && make \
+    && make install
+
+## spdlog
+RUN git clone https://github.com/gabime/spdlog.git \
+    && cd spdlog && mkdir build && cd build \
+    && cmake .. && make -j && make install
+
+
+COPY /data /tweetoscope/data

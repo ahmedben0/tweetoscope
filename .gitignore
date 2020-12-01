@@ -11,3 +11,5 @@ tweet-collector.dSYM/
 *.o
 
 builds/
+
+*.log

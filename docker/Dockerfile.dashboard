@@ -1,3 +1,3 @@
-FROM fellajimed/tweetoscope-python:main-1 
+FROM fellajimed/tweetoscope-python:main-2
 
 CMD python3 python/dashboard.py
