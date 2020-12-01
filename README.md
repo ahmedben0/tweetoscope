@@ -3,13 +3,13 @@
 ## :rotating_light: VERY IMPORTANT ! :rotating_light: ##
 
 Only the links to download the data are given in the readme of the data folder. This decision was taken to avoid uploding data and csv files in general to GitLab.
-
+Further instructions are given below.
 
 
 ## :book: General info ##
-This project was developed by Mohammed Fellaji, Elie Mokbel and Ahmed Ben Aissa from Ecole CentraleSupélec. 
+This project is the work of Group 7 ( FELLAJI Mohammed, BEN AISSA Ahmed, MOKBEL Elie).
 
-Information about the project could be found in the official website :link: : [Tweetoscope](http://sdi.metz.centralesupelec.fr/spip.php?article25)
+The presentation of the project could be found in the official website :link: : [Tweetoscope](http://sdi.metz.centralesupelec.fr/spip.php?article25)
 
 
 ## :dart: How to run the project ? ##
