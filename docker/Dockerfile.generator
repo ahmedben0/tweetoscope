@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-FROM fellajimed/tweeto-main-docker:v1
-=======
 FROM fellajimed/tweetoscope-cpp:main-1 
->>>>>>> master
 
 COPY build/ /tweetoscope/build
 
 WORKDIR /tweetoscope/build/src
 
-<<<<<<< HEAD
-CMD ./cpp/tweet-generator.o ./configs/params.config
-=======
 CMD ./cpp/tweet-generator.o ./configs/params-dep.config
->>>>>>> master
