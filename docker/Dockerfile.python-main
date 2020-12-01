@@ -12,4 +12,6 @@ COPY src/python /tweetoscope/build/src/python
 
 WORKDIR /tweetoscope/build/src
 
+RUN mkdir logs
+
 RUN rm configs/collector.ini && mv configs/collector-dep.ini configs/collector.ini

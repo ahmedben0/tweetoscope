@@ -29,9 +29,9 @@ build_main_python_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.python-main -t $Dockerhub_username/tweetoscope-python:main-2 .
+        - docker build -f docker/Dockerfile.python-main -t $Dockerhub_username/tweetoscope-python:main-3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweetoscope-python:main-2
+        - docker push $Dockerhub_username/tweetoscope-python:main-3
     rules:
         - changes:
             - docker/Dockerfile.python-main
@@ -79,9 +79,9 @@ build_estimator_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.estimator -t $Dockerhub_username/tweetoscope-python:estimator-2 .
+        - docker build -f docker/Dockerfile.estimator -t $Dockerhub_username/tweetoscope-python:estimator-3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweetoscope-python:estimator-2
+        - docker push $Dockerhub_username/tweetoscope-python:estimator-3
     rules:
         - changes:
             - docker/Dockerfile.estimator
@@ -95,9 +95,9 @@ build_predictor_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.predictor -t $Dockerhub_username/tweetoscope-python:predictor-2 .
+        - docker build -f docker/Dockerfile.predictor -t $Dockerhub_username/tweetoscope-python:predictor-3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweetoscope-python:predictor-2
+        - docker push $Dockerhub_username/tweetoscope-python:predictor-3
     rules:
         - changes:
             - docker/Dockerfile.predictor
@@ -111,9 +111,9 @@ build_learner_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.learner -t $Dockerhub_username/tweetoscope-python:learner-2 .
+        - docker build -f docker/Dockerfile.learner -t $Dockerhub_username/tweetoscope-python:learner-3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweetoscope-python:learner-2
+        - docker push $Dockerhub_username/tweetoscope-python:learner-3
     rules:
         - changes:
             - docker/Dockerfile.learner
@@ -127,9 +127,9 @@ build_dashboard_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.dashboard -t $Dockerhub_username/tweetoscope-python:dashboard-2 .
+        - docker build -f docker/Dockerfile.dashboard -t $Dockerhub_username/tweetoscope-python:dashboard-3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweetoscope-python:dashboard-2
+        - docker push $Dockerhub_username/tweetoscope-python:dashboard-3
     rules:
         - changes:
             - docker/Dockerfile.dashboard
@@ -143,9 +143,9 @@ build_monitor_docker_image:
     services:
         - docker:dind        
     script:
-        - docker build -f docker/Dockerfile.monitor -t $Dockerhub_username/tweetoscope-python:monitor-2 .
+        - docker build -f docker/Dockerfile.monitor -t $Dockerhub_username/tweetoscope-python:monitor-3 .
         - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-        - docker push $Dockerhub_username/tweetoscope-python:monitor-2
+        - docker push $Dockerhub_username/tweetoscope-python:monitor-3
     rules:
         - changes:
             - docker/Dockerfile.monitor
