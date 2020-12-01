@@ -10,6 +10,9 @@ config = configparser.ConfigParser(strict=False)
 config.read('./configs/collector.ini')
 
 
+logger = logger.get_logger('Monitor', broker_list=config["kafka"]["brokers"], debug=True)
+
+
 consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
@@ -31,6 +34,6 @@ for message in consumer:
      GLOBAL_MEAN = ((counter-1)*GLOBAL_MEAN + _are)/(counter)
 
      if counter%10 == 0 :
-         print("MEAN :", int(GLOBAL_MEAN), " - MAX :", int(GLOBAL_MAX), " - MIN :", int(GLOBAL_MIN))
+         logger.info(f'[Monitor] MEAN : {int(GLOBAL_MEAN)} - MAX : {int(GLOBAL_MAX)} - MIN : {int(GLOBAL_MIN)}')
 
 

@@ -1,15 +1,3 @@
-FROM python:3.7-slim
-
-COPY docker/requirements_python.txt /
-
-RUN pip install -r requirements_python.txt
-
-COPY src/configs /tweetoscope/build/src/configs
-
-COPY src/python /tweetoscope/build/src/python
-
-WORKDIR /tweetoscope/build/src
-
-RUN rm configs/collector.ini && mv configs/collector-dep.ini configs/collector.ini
+FROM fellajimed/tweetoscope-python:main-1 
 
 CMD python3 python/dashboard.py
