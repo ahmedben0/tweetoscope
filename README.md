@@ -3,7 +3,10 @@
 ## :rotating_light: VERY IMPORTANT ! :rotating_light: ##
 
 Only the links to download the data are given in the readme of the data folder. This decision was taken to avoid uploding data and csv files in general to GitLab.
-Further instructions are given below.
+
+This is the link to the demonstration video : https://filesender.renater.fr/?s=download&token=ca91518a-1371-45a8-b6d2-63564aec268a
+
+Please check the detailed instructions given below.
 
 
 ## :book: General info ##
