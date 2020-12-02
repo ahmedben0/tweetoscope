@@ -32,7 +32,7 @@ The presentation of the project could be found in the official website :link: : 
     $ cmake ..
     $ make
 ```
-* Run the generator and the collector from ./build/src using the files for the configuration : [params.config](./src/configs/params.config) and [collector.ini](./src/configs/collector.ini)
+* Run the generator and the collector from ./build/src using the files for the configuration : [params-build.config](./src/configs/params-build.config) and [collector-build.ini](./src/configs/collector-build.ini)
 ```
 (src)$ ./cpp/tweet-generator.o ./configs/params-build.config
 (src)$ ./cpp/tweet-collector.o ./configs/collector-build.ini 
