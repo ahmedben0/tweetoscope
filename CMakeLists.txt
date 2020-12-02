@@ -29,4 +29,5 @@ add_compile_options(-O3 -Wall)
 add_subdirectory(src/cpp)
 
 file(COPY src/configs DESTINATION ${CMAKE_BINARY_DIR}/src)
+file(COPY src/python DESTINATION ${CMAKE_BINARY_DIR}/src)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/logs)
