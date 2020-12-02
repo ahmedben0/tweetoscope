@@ -34,8 +34,8 @@ The presentation of the project could be found in the official website :link: : 
 ```
 * Run the generator and the collector from ./build/src using the files for the configuration : [params.config](./src/configs/params.config) and [collector.ini](./src/configs/collector.ini)
 ```
-(src)$ ./cpp/tweet-generator.o ./configs/params.config
-(src)$ ./cpp/tweet-collector.o ./configs/collector.ini 
+(src)$ ./cpp/tweet-generator.o ./configs/params-build.config
+(src)$ ./cpp/tweet-collector.o ./configs/collector-build.ini 
 ```
 * As for the C++ files, the python files are also run from ./build/src
 

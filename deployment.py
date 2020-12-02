@@ -4,7 +4,7 @@ import os
 THIS IS A SIMPLE SCRIPT TO DEPLOY THE APP ON K8S
 
 TO BE RUN FROM root
-  $$ python3 dep.py
+  $$ python3 deployment.py
 '''
 
 os.system("kubectl delete -f K8s/deployment.yml")
