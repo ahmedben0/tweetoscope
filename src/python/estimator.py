@@ -3,10 +3,16 @@
 ## We use the MAP estimator.
 
 from utils import *
+import configparser
 
+
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
 
 ## init logger
-logger = logger.get_logger('Estimator', broker_list='localhost:9092', debug=True)
+logger = logger.get_logger('Estimator', broker_list=config["kafka"]["brokers"], debug=True)
 
 ## read config file
 config = configparser.ConfigParser(strict=False)
@@ -44,6 +50,6 @@ for message in consumer:
    #produce message to cascade properties
    n_obs = len(cascade)
    n_supp = estimated_size(n_obs, estimated_params)
-   valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': n_obs, 'n_supp' : n_supp, 'params': estimated_params}
+   valeurs =  {'type': 'parameters', 'cid': value['cid'], 'msg' : value['msg'], 'n_obs': n_obs, 'n_supp' : int(n_supp), 'params': estimated_params}
    producer.send(config["topic"]["out_properties"], value=msg_serializer(valeurs), key=msg_serializer(value['T_obs']))
-   logger.info(valeurs)
+   logger.debug(valeurs)

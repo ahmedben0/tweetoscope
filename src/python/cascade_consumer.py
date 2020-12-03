@@ -16,7 +16,7 @@ consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "group_id":"myOwnPrivatePythonGroup"}
 
 consumer = KafkaConsumer(**consumerProperties)
-consumer.subscribe(config["topic"]["out_properties"])
+consumer.subscribe(config["topic"]["out_series"])
 
 
 for message in consumer:

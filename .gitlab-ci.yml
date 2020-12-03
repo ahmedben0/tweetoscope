@@ -1,32 +1,13 @@
-before_script:
-    - export PATH=$PATH:/usr/local/bin:/usr/include/:/usr/bin/
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/share/pkgconfig/:/usr/lib/pkgconfig/
-    - export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig/:/usr/local/lib/:/usr/local/include/
-
-
 stages:
     - build
-    - test
+    - build_docker
 
 
-build_docker:
-    image: docker:latest
-    stage: build
-    services:
-        - docker:dind
-    before_script:
-        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
-    script:
-        - apk update && apk add git
-        - docker build -f docker/Dockerfile.main -t $Dockerhub_username/$Docker_image_name:latest .
-        - docker push $Dockerhub_username/$Docker_image_name:latest
-    rules:
-        - changes:
-            - docker/Dockerfile.main
+################################################
 
 
-build:
-    image: $Dockerhub_username/$Docker_image_name:latest
+compile_cpp:
+    image: $Dockerhub_username/tweetoscope-cpp:main-1 
     stage: build
     tags:
         - docker
@@ -35,12 +16,139 @@ build:
         - cd build
         - cmake ..
         - make
+    artifacts:
+        paths:
+            - build/
+        expire_in: 1 days
 
-
-test:
-    image: $Dockerhub_username/$Docker_image_name:latest
-    stage: test
-    tags:
-        - docker
+## this image is built here so that in case of a new image
+## all the python images using this image won't have to push the whole data
+build_main_python_docker_image:
+    image: docker:latest
+    stage: build
+    services:
+        - docker:dind        
     script:
-        - echo "add tests"
+        - docker build -f docker/Dockerfile.python-main -t $Dockerhub_username/tweetoscope-python:main-3 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-python:main-3
+    rules:
+        - changes:
+            - docker/Dockerfile.python-main
+            - src/python/*
+            - docker/requirements_python.txt
+
+################################################
+
+
+build_collector_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.collector -t $Dockerhub_username/tweetoscope-cpp:collector-1 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-cpp:collector-1
+    rules:
+        - changes:
+            - docker/Dockerfile.collector
+            - src/cpp/*
+            - docker/requirements_apt.txt
+
+
+build_generator_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.generator -t $Dockerhub_username/tweetoscope-cpp:generator-1 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-cpp:generator-1
+    rules:
+        - changes:
+            - docker/Dockerfile.generator
+            - src/cpp/*
+            - docker/requirements_apt.txt
+
+
+build_estimator_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.estimator -t $Dockerhub_username/tweetoscope-python:estimator-3 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-python:estimator-3
+    rules:
+        - changes:
+            - docker/Dockerfile.estimator
+            - src/python/*
+            - docker/requirements_python.txt
+
+
+build_predictor_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.predictor -t $Dockerhub_username/tweetoscope-python:predictor-3 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-python:predictor-3
+    rules:
+        - changes:
+            - docker/Dockerfile.predictor
+            - src/python/*
+            - docker/requirements_python.txt
+
+
+build_learner_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.learner -t $Dockerhub_username/tweetoscope-python:learner-3 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-python:learner-3
+    rules:
+        - changes:
+            - docker/Dockerfile.learner
+            - src/python/*
+            - docker/requirements_python.txt
+
+
+build_dashboard_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.dashboard -t $Dockerhub_username/tweetoscope-python:dashboard-3 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-python:dashboard-3
+    rules:
+        - changes:
+            - docker/Dockerfile.dashboard
+            - src/python/*
+            - docker/requirements_python.txt
+
+
+build_monitor_docker_image:
+    image: docker:latest
+    stage: build_docker
+    services:
+        - docker:dind        
+    script:
+        - docker build -f docker/Dockerfile.monitor -t $Dockerhub_username/tweetoscope-python:monitor-3 .
+        - docker login -u "$Dockerhub_username" -p "$Dockerhub_password"
+        - docker push $Dockerhub_username/tweetoscope-python:monitor-3
+    rules:
+        - changes:
+            - docker/Dockerfile.monitor
+            - src/python/*
+            - docker/requirements_python.txt
+

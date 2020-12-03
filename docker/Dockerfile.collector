@@ -1,0 +1,7 @@
+FROM fellajimed/tweetoscope-cpp:main-1 
+
+COPY build/ /tweetoscope/build
+
+WORKDIR /tweetoscope/build/src
+
+CMD ./cpp/tweet-collector.o ./configs/collector-dep.ini

@@ -1,5 +1,6 @@
 import argparse, os, atexit
 import logging
+from logging import handlers
 import json
 import time
 import textwrap
@@ -70,7 +71,12 @@ def get_logger(name, debug=False, topic=default_log_topic, broker_list=default_b
     formatter = logging.Formatter('{} - %(levelname)-8s | %(message)s'.format(name))
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-
+    
+    fh = handlers.TimedRotatingFileHandler(f"./logs/{name}.log")
+    fh.setFormatter(formatter)
+    fh.setLevel(logging.INFO)
+    logger.addHandler(fh)
+    
     ch = KafkaHandler(broker_list, topic = topic)
     ch.setLevel(level)
     formatter = logging.Formatter('%(message)s')

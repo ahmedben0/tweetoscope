@@ -7,38 +7,64 @@
 ## The predictor outputs the ARE as a statistic of the performance in the topic "Stat"
 
 from utils import *
+import configparser
 
+
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
+
+
+## read config file
+config = configparser.ConfigParser(strict=False)
+## the script is executed from the folder "src"
+config.read('./configs/collector.ini')
 
 ## init logger
-logger = logger.get_logger('Predictor', broker_list='localhost:9092', debug=True)
+logger = logger.get_logger('Predictor', broker_list=config["kafka"]["brokers"], debug=True)
 
 
 ##create topic models with a partition for each time window
 admin_client = KafkaAdminClient(
-    bootstrap_servers="localhost:9092"
+    bootstrap_servers=config["kafka"]["brokers"]
 )
-#we start by deleting any existing topic
-admin_client.delete_topics(['models'])
-time.sleep(5)
+try : 
+    #we start by deleting any existing topic
+    admin_client.delete_topics(['models'])
+    time.sleep(5)
+except :
+    pass
+
 
 topic_list = []
 topic_list.append(NewTopic(name="models", num_partitions=len(obs), replication_factor=1))
 admin_client.create_topics(new_topics=topic_list, validate_only=False)
 
 
-## Create consumers to read from cascade_properties
-consumerProperties = { "bootstrap_servers":['localhost:9092'],
+## Create consumers
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
                        "auto_offset_reset":"earliest",
                        "group_id":"myOwnPrivatePythonGroup"}
+
+
 consumer_cascadeProperties = KafkaConsumer(**consumerProperties)
 consumer_cascadeProperties.subscribe("cascade_properties")
 
 
+consumerProperties = { "bootstrap_servers":[config["kafka"]["brokers"]],
+                       "auto_offset_reset":"latest",
+                       "group_id":"myOwnPrivatePythonGroup"}
+consumer_models = KafkaConsumer(**consumerProperties)
+consumer_models.subscribe("models")
+
+
 ## Create producers
-producerProperties = {"bootstrap_servers":['localhost:9092']}
-producer_sample = KafkaProducer(**producerProperties) #for sedning samples to the learner
-producer_alert = KafkaProducer(**producerProperties) #for producing the longest cascades
-producer_stat = KafkaProducer(**producerProperties) #for producing stats about the performance (ARE)
+producerProperties = {"bootstrap_servers":[config["kafka"]["brokers"]]}
+
+producer_sample = KafkaProducer(**producerProperties)
+producer_alert  = KafkaProducer(**producerProperties)
+producer_stat   = KafkaProducer(**producerProperties)
 
 # class model for prediction
 class model_consumer:
@@ -140,8 +166,7 @@ for message in consumer_cascadeProperties:
         features[0] = compute_n_star(X[0]) #we replace p by n_star
         valeurs_sample =  {'type': 'sample', 'cid': cid, 'X' : X, 'W': W}
         producer_sample.send("samples", value=msg_serializer(valeurs_sample), key=msg_serializer(T_obs))
-        logger.info('NEW SAMPLE:')
-        logger.info(valeurs_sample)
+        logger.debug(f'[NEW SAMPLE] {valeurs_sample}')
 
         #We compute the ARE (messages of type stat)
         if model is None:
@@ -153,15 +178,16 @@ for message in consumer_cascadeProperties:
         are = compute_are(n_pred, n_true)
         valeurs_stat =  {'type': 'stat', 'cid': cid, 'T_obs' : T_obs, 'ARE': are}
         producer_stat.send("stats", value=msg_serializer(valeurs_stat), key=None)
-        logger.info('ARE:')
-        logger.info(valeurs_stat)
+        logger.debug(f'[ARE] {valeurs_stat}')
+        logger.info(f'[ARE] {valeurs_stat["ARE"]}')
+
 
         #we compute the alert message
-        
-        valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : n_pred}
+        valeurs_alert = { 'type': 'alert', 'cid': cid, 'msg' : value['msg'], 'T_obs': T_obs, 'n_tot' : int(n_pred)}
         producer_alert.send("alert", value=msg_serializer(valeurs_alert), key=None)
-        logger.info('ALERT:')
-        logger.info(valeurs_alert)
+        logger.debug(f'[ALERT] {valeurs_alert}')
+        logger.info(f'[ALERT] {valeurs_alert["n_tot"]}')
         
 
+        
 

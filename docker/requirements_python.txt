@@ -1,0 +1,7 @@
+textwrap3
+termcolor
+numpy 
+scikit-learn
+pandas
+tabulate
+kafka-python
